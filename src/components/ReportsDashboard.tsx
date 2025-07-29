@@ -2,26 +2,35 @@ import React, { useMemo, useState } from 'react';
 import type { Patient } from '../types';
 import { ChartBarIcon, TagIcon } from '../constants';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Payload } from 'recharts/types/component/DefaultTooltipContent';
 
 interface ReportsDashboardProps {
   patient: Patient;
 }
 
-// Wrap CustomTooltip in React.memo to prevent unnecessary re-renders.
-// This is a best practice and can fix subtle rendering bugs in libraries like recharts.
-const CustomTooltip = React.memo(({ active, payload, label }: any) => {
+// Definição correta e explícita dos tipos para o CustomTooltip
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Payload<number, string>[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="rounded-lg border bg-white p-2 shadow-sm">
         <p className="font-bold text-slate-800">{label}</p>
-        {payload.map((pld: any, index: number) => (
-          <p key={index} style={{ color: pld.color }}>{`${pld.name}: ${pld.value}`}</p>
+        {payload.map((pld, index) => (
+          <p key={`item-${index}`} style={{ color: pld.color }}>
+            {`${pld.name}: ${pld.value}`}
+          </p>
         ))}
       </div>
     );
   }
   return null;
-});
+};
+CustomTooltip.displayName = 'CustomTooltip';
 
 const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
   const [filters, setFilters] = useState({
@@ -43,7 +52,7 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
         if (startDate && sessionDate < startDate) return false;
         
         if (endDate) {
-            endDate.setHours(23, 59, 59, 999); // Include the whole day
+            endDate.setHours(23, 59, 59, 999);
             if (sessionDate > endDate) return false;
         }
         return true;
@@ -61,7 +70,7 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
     return Object.entries(tagCounts)
       .map(([name, count]) => ({ name, Frequência: count }))
       .sort((a, b) => b.Frequência - a.Frequência)
-      .slice(0, 10); // Show top 10 tags
+      .slice(0, 10);
   }, [filteredSessions]);
   
   const sessionFrequencyData = useMemo(() => {
@@ -93,7 +102,6 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
 
   return (
     <div className="space-y-8">
-      {/* Filters */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div>
           <label htmlFor="report-startDate" className="block text-sm font-medium text-slate-700">Data Inicial</label>
@@ -105,7 +113,6 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
         </div>
       </div>
       
-       {/* Session Frequency Chart */}
        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h3 className="text-xl font-bold text-slate-800 mb-6">Frequência de Sessões (Mensal)</h3>
         {sessionFrequencyData.length > 1 ? (
@@ -113,17 +120,12 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
             <ResponsiveContainer>
               <LineChart
                 data={sessionFrequencyData}
-                 margin={{
-                  top: 5,
-                  right: 20,
-                  left: -20,
-                  bottom: 5,
-                }}
+                 margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="month" stroke="#475569" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis allowDecimals={false} stroke="#475569" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip content={CustomTooltip} />
+                <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} />
                 <Line type="monotone" dataKey="Sessões" stroke="#475569" strokeWidth={2} activeDot={{ r: 8 }} />
               </LineChart>
@@ -138,7 +140,6 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
         )}
       </div>
 
-      {/* Tag Frequency Chart */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h3 className="text-xl font-bold text-slate-800 mb-6">Frequência de Tags Clínicas</h3>
         {tagFrequencyData.length > 0 ? (
@@ -152,7 +153,7 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                   <XAxis dataKey="name" stroke="#475569" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis allowDecimals={false} stroke="#475569" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip content={CustomTooltip} cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }} />
                   <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} />
                   <Bar dataKey="Frequência" fill="#64748b" radius={[4, 4, 0, 0]} />
                 </BarChart>
