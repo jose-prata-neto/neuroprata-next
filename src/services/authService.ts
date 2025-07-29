@@ -95,7 +95,7 @@ export const login = async (email: string, password: string): Promise<{ success:
             logEvent('login_success');
             return { success: true, user };
         }
-
+        
         return { success: false, error: 'E-mail ou senha inválidos.' };
     } catch (error) {
         console.error("Erro no login:", error);
