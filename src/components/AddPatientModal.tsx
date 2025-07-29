@@ -1,6 +1,7 @@
 
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Modal from './Modal';
 import Button from './Button';
 import type { Patient } from '@/types';
@@ -83,7 +84,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ isOpen, onClose, onSa
           <div className="mt-1 flex items-center space-x-4">
             <span className="inline-block h-12 w-12 rounded-full overflow-hidden bg-slate-100">
               {photoUrl ? (
-                <img src={photoUrl} alt="Preview" className="h-full w-full object-cover" />
+                <Image src={photoUrl} alt="Preview" fill className="object-cover" />
               ) : (
                 <svg className="h-full w-full text-slate-300" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 20.993V24H0v-2.997A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />

@@ -12,7 +12,7 @@ let users: User[] = [
 ];
 
 // Esta função lida com requisições GET para /api/users
-export async function GET(request: Request) {
+export async function GET() {
   // O NOSSO "ESPIÃO" ESTÁ AQUI!
   console.log('--- API GET /api/users FOI CHAMADA ---');
   console.log('Utilizadores na memória da API:', users);

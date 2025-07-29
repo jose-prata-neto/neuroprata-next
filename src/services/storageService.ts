@@ -1,8 +1,6 @@
 
 import type { Patient } from '@/types';
 
-const STORAGE_KEY = 'psychologist-patient-records';
-
 export const getPatients = async (): Promise<Patient[]> => {
   try {
     const response = await fetch('/api/patients');

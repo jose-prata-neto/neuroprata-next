@@ -1,4 +1,3 @@
-
 import type { AuditLog } from '@/types';
 import * as authService from './authService';
 
@@ -22,14 +21,12 @@ const saveLogs = (logs: AuditLog[]): void => {
     }
 };
 
-// Simulate getting a public IP
 const getSimulatedIpAddress = (): string => {
-    // This is a simulation. In a real app, this would be determined server-side.
     const octet = () => Math.floor(Math.random() * 255);
     return `92.168.${octet()}.${octet()}`;
 };
 
-export const logEvent = (action: string, details: Record<string, any> = {}): AuditLog | null => {
+export const logEvent = (action: string, details: Record<string, string | number | boolean> = {}): AuditLog | null => {
     const session = authService.getCurrentUser();
     if (!session) {
       console.warn(`Audit log for action "${action}" was skipped because there is no active user session.`);

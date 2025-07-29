@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import Button from './Button';
@@ -20,14 +19,13 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({ isOpen, onClose, on
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Reset form state when modal is about to close
     if (!isOpen) {
       const timer = setTimeout(() => {
         setName('');
         setType('report');
         setFile(null);
         setError(null);
-      }, 300); // Wait for closing animation
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
@@ -43,21 +41,20 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({ isOpen, onClose, on
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      // The `validate` function ensures `file` is not null.
-      onSave({ name, type }, file!);
+    if (validate() && file) {
+      onSave({ name, type }, file);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    setError(null); // Clear previous error on new file selection
+    setError(null);
 
     if (selectedFile) {
         if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
             setError(`O arquivo excede o limite de ${MAX_FILE_SIZE_MB}MB.`);
             setFile(null);
-            e.target.value = ''; // Clear the file input
+            e.target.value = '';
             return;
         }
 
@@ -66,7 +63,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({ isOpen, onClose, on
             setName(selectedFile.name.split('.').slice(0, -1).join('.'));
         }
     }
-  }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Adicionar Novo Documento">
@@ -87,7 +84,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({ isOpen, onClose, on
           <select 
             id="doc-type" 
             value={type} 
-            onChange={e => setType(e.target.value as any)} 
+            onChange={e => setType(e.target.value as 'pdf' | 'image' | 'report')} 
             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
           >
             <option value="report">Relatório</option>

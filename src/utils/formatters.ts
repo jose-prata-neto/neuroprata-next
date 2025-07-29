@@ -1,5 +1,5 @@
 
-import type { Session } from '../types';
+
 
 /**
  * Formats an ISO date string to a localized date string (e.g., "dd/MM/yyyy").

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import Button from './Button';
@@ -8,14 +7,12 @@ import type { Session, SuggestedTag, Tag } from '@/types';
 import { SESSION_TYPES } from '@/types';
 import { getLocalDateTimeString } from '@/utils/formatters';
 
-
 interface SessionEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (session: Omit<Session, 'id'>, files: File[]) => Promise<void>;
 }
 
-// Helper function moved outside for stability and best practices.
 const renderProgressBar = (relevance: number) => {
     const width = Math.round(relevance * 100);
     return (
@@ -25,7 +22,6 @@ const renderProgressBar = (relevance: number) => {
     );
 };
 
-// Moved constant outside for stability.
 const typeLabels: Record<typeof SESSION_TYPES[number], string> = {
     individual: 'Individual',
     couple: 'Casal',
@@ -107,7 +103,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
             duration,
             sessionType,
             tags: approvedTags,
-            attachments: [], // We pass files separately, so this can remain empty.
+            attachments: [],
             date: new Date(sessionDate).toISOString()
         }, attachments);
     } catch (error) {
@@ -119,7 +115,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setAttachments(prev => [...prev, ...Array.from(e.target.files!)]);
+      setAttachments(prev => [...prev, ...Array.from(e.target.files as FileList)]);
     }
   };
 
@@ -150,7 +146,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
                     value={duration}
                     onChange={(e) => {
                         setDuration(Number(e.target.value));
-                        if(errors.duration) setErrors(p => ({...p, duration: undefined}));
+                        if(errors.duration) setErrors((p: { notes?: string, duration?: string }) => ({...p, duration: undefined}));
                     }}
                     className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm ${errors.duration ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'}`}
                   />
@@ -158,7 +154,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
                 </div>
                  <div>
                   <label htmlFor="sessionType" className="block text-sm font-medium text-slate-700">Tipo de Atendimento</label>
-                  <select id="sessionType" value={sessionType} onChange={e => setSessionType(e.target.value as any)} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm">
+                  <select id="sessionType" value={sessionType} onChange={e => setSessionType(e.target.value as typeof SESSION_TYPES[number])} className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm">
                     {SESSION_TYPES.map(type => (
                        <option key={type} value={type}>{typeLabels[type]}</option>
                     ))}
@@ -172,7 +168,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
                 value={notes}
                 onChange={(e) => {
                     setNotes(e.target.value);
-                    if(errors.notes) setErrors(p => ({...p, notes: undefined}));
+                    if(errors.notes) setErrors((p: { notes?: string, duration?: string }) => ({...p, notes: undefined}));
                 }}
                 rows={8}
                 className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm ${errors.notes ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'}`}

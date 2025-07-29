@@ -1,6 +1,7 @@
 
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import type { Patient, Session, Document, User } from '@/types';
 import Button from './Button';
 import { PlusIcon, UserGroupIcon, UserCircleIcon, DocumentIcon, ChartBarIcon, TagIcon, DownloadIcon, EyeIcon, TrashIcon } from '@/constants';
@@ -44,7 +45,7 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onA
       setActiveTab('sessions');
       logEvent('view_patient_record', { patientId: patient.id, patientName: patient.name });
     }
-  }, [patient?.id]);
+  }, [patient]);
 
 
   if (!patient) {
@@ -69,7 +70,9 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onA
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
             <div className="flex items-center space-x-4">
                 {patient.photoUrl ? (
-                    <img src={patient.photoUrl} alt={patient.name} className="h-16 w-16 rounded-full object-cover" />
+                    <div className="relative h-16 w-16 rounded-full overflow-hidden">
+                        <Image src={patient.photoUrl} alt={patient.name} fill className="object-cover" />
+                    </div>
                 ) : (
                     <div className="h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center">
                         <UserCircleIcon className="h-10 w-10 text-slate-500" />
@@ -154,7 +157,7 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onA
               ) : (
                 <div className="mt-6 rounded-lg border-2 border-dashed border-slate-300 p-12 text-center">
                   <h4 className="text-lg font-semibold text-slate-700">Nenhuma sessão registrada</h4>
-                  <p className="mt-1 text-slate-500">Clique em "Nova Sessão" para adicionar a primeira para este paciente.</p>
+                  <p className="mt-1 text-slate-500">Clique em &quot;Nova Sessão&quot; para adicionar a primeira para este paciente.</p>
                 </div>
               )}
             </div>

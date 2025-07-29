@@ -39,7 +39,7 @@ const mockPatients: Patient[] = [
 ];
 
 // Esta função lida com requisições GET para /api/patients
-export async function GET(request: Request) {
+export async function GET() {
   // No futuro, aqui você buscaria os dados de um banco de dados real.
   // Por enquanto, apenas retornamos nossos dados de exemplo.
 

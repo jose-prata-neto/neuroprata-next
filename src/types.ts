@@ -1,5 +1,3 @@
-
-
 export const SESSION_TYPES = ['individual', 'couple', 'family', 'group'] as const;
 
 export interface Tag {
@@ -8,21 +6,21 @@ export interface Tag {
 }
 
 export interface SuggestedTag extends Tag {
-  relevance: number; // score from 0 to 1
+  relevance: number;
 }
 
 export interface Document {
   id: string;
   name: string;
   type: 'pdf' | 'image' | 'report';
-  url: string; // a placeholder url
+  url: string;
   uploadedAt: string;
 }
 
 export interface Session {
   id: string;
   date: string;
-  duration: number; // in minutes
+  duration: number;
   sessionType: typeof SESSION_TYPES[number];
   notes: string;
   attachments: { name:string; url: string }[];
@@ -35,9 +33,9 @@ export interface User {
   email: string;
   passwordHash: string;
   role: 'psychologist' | 'staff' | 'admin';
-  crp?: string; // For psychologists
-  cpf?: string; // For staff
-  linkedUserIds?: string[]; // Psychologist links to staff, staff links to psychologists
+  crp?: string;
+  cpf?: string;
+  linkedUserIds?: string[];
 }
 
 export interface AuditLog {
@@ -46,8 +44,8 @@ export interface AuditLog {
   userEmail: string;
   action: string;
   timestamp: string;
-  details: Record<string, any>;
-  ipAddress: string; // Simulated IP
+  details: Record<string, string | number | boolean>;
+  ipAddress: string;
   sessionId?: string;
 }
 
@@ -58,8 +56,8 @@ export interface Patient {
   email: string;
   phone: string;
   birthDate: string;
-  photoUrl?: string; // To store base64 image
-  consent: boolean; // Digital consent
+  photoUrl?: string;
+  consent: boolean;
   medicalHistory: string;
   documents: Document[];
   sessions: Session[];
@@ -74,5 +72,5 @@ export interface RegisterData {
     email: string;
     password: string;
     role: 'psychologist' | 'staff' | 'admin';
-    identifier?: string; // CRP or CPF, optional for admin
+    identifier?: string;
 }

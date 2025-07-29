@@ -22,7 +22,6 @@ import AuthPage from '@/components/AuthPage';
 import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import TransferPatientModal from '@/components/TransferPatientModal';
 
-
 export default function HomePage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -47,6 +46,10 @@ export default function HomePage() {
   const [sessionToView, setSessionToView] = useState<Session | null>(null);
   const [sessionLogsToView, setSessionLogsToView] = useState<AuditLog[]>([]);
 
+  const selectedPatient = useMemo(() => {
+    return patients.find(p => p.id === selectedPatientId) || null;
+  }, [patients, selectedPatientId]);
+
   const deleteModalInfo = useMemo(() => {
     if (itemToDelete?.type === 'patient') {
       const patient = patients.find(p => p.id === itemToDelete.id);
@@ -57,7 +60,6 @@ export default function HomePage() {
     }
     return { title: '', message: '' };
   }, [itemToDelete, patients]);
-
 
   const refreshData = useCallback(async () => {
     try {
@@ -95,7 +97,7 @@ export default function HomePage() {
 
   const updateLogsState = useCallback((newLog: AuditLog | null) => {
     if (newLog && currentUser?.role === 'admin') {
-      setAuditLogs(prev => [newLog, ...prev]);
+      setAuditLogs(prevLogs => [newLog, ...prevLogs]);
     }
   }, [currentUser?.role]);
 
@@ -127,7 +129,8 @@ export default function HomePage() {
         setSelectedPatientId(null);
       }
     }
-  }, [patientsForCurrentUser, selectedPatientId, mainView, currentUser?.role]);
+  }, [patientsForCurrentUser, selectedPatientId, mainView, currentUser?.role, selectedPatient]);
+
 
   const updateAndSavePatients = async (newPatients: Patient[]) => {
     try {
@@ -328,7 +331,7 @@ export default function HomePage() {
         await updateAndSavePatients(patients.filter(p => p.id !== itemToDelete.id));
         updateLogsState(auditLogService.logEvent('delete_patient', { 
           patientId: itemToDelete.id, 
-          patientName: patientToDelete?.name 
+          patientName: patientToDelete?.name || 'Unknown'
         }));
         
         if (selectedPatientId === itemToDelete.id) {
@@ -370,9 +373,9 @@ export default function HomePage() {
       
       updateLogsState(auditLogService.logEvent('transfer_patient', { 
         patientId: selectedPatientId, 
-        patientName: selectedPatient?.name,
+        patientName: selectedPatient?.name || 'Unknown',
         newPsychologistId, 
-        newPsychologistName: newPsychologist?.name
+        newPsychologistName: newPsychologist?.name || 'Unknown'
       }));
       
       setModals(prev => ({ ...prev, transferPatient: false }));
@@ -442,7 +445,7 @@ export default function HomePage() {
   };
 
   const handleOpenViewNotesModal = (session: Session) => {
-    updateLogsState(auditLogService.logEvent('view_session_notes', { patientId: selectedPatientId, sessionId: session.id }));
+    updateLogsState(auditLogService.logEvent('view_session_notes', { patientId: selectedPatientId || 'Unknown', sessionId: session.id }));
     setSessionToView(session);
     setModals(prev => ({ ...prev, viewNotes: true }));
   };
@@ -451,10 +454,6 @@ export default function HomePage() {
     setSessionLogsToView(logs);
     setModals(prev => ({ ...prev, viewLogDetails: true }));
   }
-  
-  const selectedPatient = useMemo(() => {
-    return patients.find(p => p.id === selectedPatientId) || null;
-  }, [patients, selectedPatientId]);
 
   if (isLoading) {
     return <div className="flex h-screen w-full items-center justify-center">Carregando...</div>;

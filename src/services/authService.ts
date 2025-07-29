@@ -1,10 +1,7 @@
-
 import type { User, RegisterData } from '@/types';
 import { logEvent } from './auditLogService';
 
 const CURRENT_USER_SESSION_KEY = 'neuroprata-current-user';
-
-// --- Funções da API de Utilizadores ---
 
 export const getUsers = async (): Promise<User[]> => {
   try {
@@ -36,8 +33,6 @@ export const saveUsers = async (users: User[]): Promise<void> => {
   }
 };
 
-// --- Funções de Sessão (ainda usam sessionStorage, mas serão substituídas pelo NextAuth) ---
-
 export const saveCurrentUser = (user: User): string => {
     const sessionId = crypto.randomUUID();
     sessionStorage.setItem(CURRENT_USER_SESSION_KEY, JSON.stringify({ user, sessionId }));
@@ -47,7 +42,10 @@ export const saveCurrentUser = (user: User): string => {
 export const getCurrentUser = (): { user: User, sessionId: string } | null => {
     try {
         const data = sessionStorage.getItem(CURRENT_USER_SESSION_KEY);
-        return data ? JSON.parse(data) : null;
+        if (data) {
+          return JSON.parse(data);
+        }
+        return null;
     } catch (error) {
         console.error("Falha ao carregar utilizador atual do sessionStorage", error);
         return null;
@@ -58,11 +56,9 @@ export const clearCurrentUser = (): void => {
     sessionStorage.removeItem(CURRENT_USER_SESSION_KEY);
 };
 
-// --- Funções de Autenticação ---
-
 export const register = async (data: RegisterData): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
-        let users = await getUsers();
+        const users = await getUsers();
         if (users.find(u => u.email.toLowerCase() === data.email.toLowerCase())) {
             return { success: false, error: 'Este e-mail já está em uso.' };
         }
@@ -107,5 +103,3 @@ export const logout = (): void => {
     logEvent('logout');
     clearCurrentUser();
 };
-
-
