@@ -98,13 +98,15 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
   const handleSave = async () => {
     setIsSaving(true);
     try {
+        // A CORREÇÃO ESTÁ AQUI: Adicionamos o 'paymentStatus' com o valor padrão.
         await onSave({ 
             notes, 
             duration,
             sessionType,
             tags: approvedTags,
             attachments: [],
-            date: new Date(sessionDate).toISOString()
+            date: new Date(sessionDate).toISOString(),
+            paymentStatus: 'pending', // <-- Adicionado valor padrão
         }, attachments);
     } catch (error) {
         console.error("Error saving session:", error);
@@ -146,7 +148,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
                     value={duration}
                     onChange={(e) => {
                         setDuration(Number(e.target.value));
-                        if(errors.duration) setErrors((p: { notes?: string, duration?: string }) => ({...p, duration: undefined}));
+                        if(errors.duration) setErrors(p => ({...p, duration: undefined}));
                     }}
                     className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm ${errors.duration ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'}`}
                   />
@@ -168,7 +170,7 @@ export const SessionEditorModal: React.FC<SessionEditorModalProps> = ({ isOpen, 
                 value={notes}
                 onChange={(e) => {
                     setNotes(e.target.value);
-                    if(errors.notes) setErrors((p: { notes?: string, duration?: string }) => ({...p, notes: undefined}));
+                    if(errors.notes) setErrors(p => ({...p, notes: undefined}));
                 }}
                 rows={8}
                 className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm ${errors.notes ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'}`}
