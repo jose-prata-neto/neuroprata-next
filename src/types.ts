@@ -25,6 +25,7 @@ export interface Session {
   notes: string;
   attachments: { name:string; url: string }[];
   tags: Tag[];
+  paymentStatus: 'paid' | 'pending'; // <-- A CORREÇÃO ESTÁ AQUI!
 }
 
 export interface User {
@@ -44,7 +45,7 @@ export interface AuditLog {
   userEmail: string;
   action: string;
   timestamp: string;
-  details: Record<string, string | number | boolean>;
+  details: Record<string, unknown>;
   ipAddress: string;
   sessionId?: string;
 }

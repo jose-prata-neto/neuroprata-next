@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { Patient, Session, Document, User } from '@/types';
@@ -18,35 +16,38 @@ interface PatientDetailProps {
   onDeletePatient: (patientId: string) => void;
   onDeleteSession: (sessionId: string) => void;
   onTransferPatient: () => void;
+  onUpdateSessionStatus: (sessionId: string, status: 'paid' | 'pending') => void;
 }
 
 type ActiveTab = 'sessions' | 'profile' | 'documents' | 'dashboard';
 
-// Moved TabButton outside the main component to prevent re-creation on every render.
-const TabButton = ({ tabName, currentTab, setTab, children } : {tabName: ActiveTab, currentTab: ActiveTab, setTab: (tab: ActiveTab) => void, children: React.ReactNode}) => (
+const TabButton = ({ tabName, currentTab, setTab, children }: {
+  tabName: ActiveTab,
+  currentTab: ActiveTab,
+  setTab: (tab: ActiveTab) => void,
+  children: React.ReactNode
+}) => (
   <button
-      onClick={() => setTab(tabName)}
-      className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md ${
-          currentTab === tabName 
-          ? 'bg-slate-200 text-slate-800'
-          : 'text-slate-600 hover:bg-slate-100'
-      }`}
+    onClick={() => setTab(tabName)}
+    className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium rounded-md ${
+      currentTab === tabName
+        ? 'bg-slate-200 text-slate-800'
+        : 'text-slate-600 hover:bg-slate-100'
+    }`}
   >
-      {children}
+    {children}
   </button>
 );
 
-const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onAddSession, onAddDocument, onViewSessionNotes, onDeletePatient, onDeleteSession, onTransferPatient }) => {
-  // HOOKS MOVED TO TOP LEVEL before any early returns to follow the Rules of Hooks.
+const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onAddSession, onAddDocument, onViewSessionNotes, onDeletePatient, onDeleteSession, onTransferPatient, onUpdateSessionStatus }) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('sessions');
-  
+
   useEffect(() => {
     if (patient) {
       setActiveTab('sessions');
       logEvent('view_patient_record', { patientId: patient.id, patientName: patient.name });
     }
   }, [patient]);
-
 
   if (!patient) {
     return (
@@ -58,70 +59,62 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onA
     );
   }
 
-  const sortedSessions = [...patient.sessions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  
+  const sortedSessions = [...(patient.sessions || [])].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const canManagePatient = currentUser.role === 'admin' || currentUser.id === patient.psychologistId;
   const canEditSessions = canManagePatient || currentUser.role === 'staff';
 
   return (
     <div className="h-full overflow-y-auto bg-slate-50">
       <div className="mx-auto max-w-5xl p-6">
-        {/* Patient Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-            <div className="flex items-center space-x-4">
-                {patient.photoUrl ? (
-                    <div className="relative h-16 w-16 rounded-full overflow-hidden">
-                        <Image src={patient.photoUrl} alt={patient.name} fill className="object-cover" />
-                    </div>
-                ) : (
-                    <div className="h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center">
-                        <UserCircleIcon className="h-10 w-10 text-slate-500" />
-                    </div>
-                )}
-                <div>
-                    <h2 className="text-3xl font-bold text-slate-800">{patient.name}</h2>
-                    <p className="text-sm text-slate-500 mt-1">Paciente desde {formatDate(patient.createdAt)}</p>
-                </div>
-            </div>
-            {canEditSessions && (
-                <Button onClick={onAddSession} className="mt-4 sm:mt-0">
-                    <PlusIcon /> <span className="ml-2 hidden sm:inline">Nova Sessão</span>
-                </Button>
+          <div className="flex items-center space-x-4">
+            {patient.photoUrl ? (
+              <div className="relative h-16 w-16 rounded-full overflow-hidden">
+                <Image src={patient.photoUrl} alt={patient.name} fill className="object-cover" />
+              </div>
+            ) : (
+              <div className="h-16 w-16 rounded-full bg-slate-200 flex items-center justify-center">
+                <UserCircleIcon className="h-10 w-10 text-slate-500" />
+              </div>
             )}
+            <div>
+              <h2 className="text-3xl font-bold text-slate-800">{patient.name}</h2>
+              <p className="text-sm text-slate-500 mt-1">Paciente desde {formatDate(patient.createdAt)}</p>
+            </div>
+          </div>
+          {canEditSessions && (
+            <Button onClick={onAddSession} className="mt-4 sm:mt-0">
+              <PlusIcon /> <span className="ml-2 hidden sm:inline">Nova Sessão</span>
+            </Button>
+          )}
         </div>
 
-        {/* Tabs */}
         <div className="mt-6 border-b border-slate-200">
-            <nav className="-mb-px flex space-x-4" aria-label="Tabs">
-                <TabButton tabName="sessions" currentTab={activeTab} setTab={setActiveTab}><DocumentIcon className="h-4 w-4"/><span>Sessões</span></TabButton>
-                <TabButton tabName="profile" currentTab={activeTab} setTab={setActiveTab}><UserCircleIcon className="h-4 w-4"/><span>Perfil</span></TabButton>
-                <TabButton tabName="documents" currentTab={activeTab} setTab={setActiveTab}><DocumentIcon className="h-4 w-4"/><span>Documentos</span></TabButton>
-                <TabButton tabName="dashboard" currentTab={activeTab} setTab={setActiveTab}><ChartBarIcon className="h-4 w-4"/><span>Relatórios</span></TabButton>
-            </nav>
+          <nav className="-mb-px flex space-x-4" aria-label="Tabs">
+            <TabButton tabName="sessions" currentTab={activeTab} setTab={setActiveTab}><DocumentIcon className="h-4 w-4" /><span>Sessões</span></TabButton>
+            <TabButton tabName="profile" currentTab={activeTab} setTab={setActiveTab}><UserCircleIcon className="h-4 w-4" /><span>Perfil</span></TabButton>
+            <TabButton tabName="documents" currentTab={activeTab} setTab={setActiveTab}><DocumentIcon className="h-4 w-4" /><span>Documentos</span></TabButton>
+            <TabButton tabName="dashboard" currentTab={activeTab} setTab={setActiveTab}><ChartBarIcon className="h-4 w-4" /><span>Relatórios</span></TabButton>
+          </nav>
         </div>
 
-        {/* Tab Content */}
         <div className="mt-6">
           {activeTab === 'sessions' && (
             <div>
               <h3 className="text-xl font-bold text-slate-800 mb-4">Histórico de Sessões</h3>
               {sortedSessions.length > 0 ? (
                 <div className="space-y-6">
-                  {sortedSessions.map((session: Session) => (
+                  {sortedSessions.map((session) => (
                     <div key={session.id} className="rounded-lg border border-slate-200 bg-white shadow-sm flex flex-col">
                       <div className="border-b border-slate-200 bg-slate-50/50 p-4 flex justify-between items-center">
                         <p className="font-semibold text-slate-700">{formatDateTime(session.date)}</p>
                         <div className="flex items-center space-x-2">
-                            <p className="text-sm text-slate-500">{session.duration} min - {session.sessionType}</p>
-                            {canEditSessions && (
-                                <button
-                                  onClick={() => onDeleteSession(session.id)}
-                                  className="text-slate-400 hover:text-red-600"
-                                  title="Excluir sessão"
-                                >
-                                  <TrashIcon className="h-4 w-4" />
-                                </button>
-                            )}
+                          <p className="text-sm text-slate-500">{session.duration} min - {session.sessionType}</p>
+                          {canEditSessions && (
+                            <button onClick={() => onDeleteSession(session.id)} className="text-slate-400 hover:text-red-600" title="Excluir sessão">
+                              <TrashIcon className="h-4 w-4" />
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="p-6 space-y-4 flex-grow">
@@ -129,28 +122,39 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onA
                             <h4 className="font-semibold text-slate-800">Anotações da Sessão</h4>
                             <p className="mt-2 text-slate-600 whitespace-pre-wrap line-clamp-4">{session.notes || "Nenhuma anotação para esta sessão."}</p>
                         </div>
-                        {session.tags.length > 0 && (
-                            <div>
-                                <h5 className="flex items-center font-semibold text-slate-800 text-sm">
-                                    <TagIcon className="mr-2 h-4 w-4 text-slate-500"/>
-                                    Tags Clínicas
-                                </h5>
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                    {session.tags.map(tag => (
-                                        <span key={tag.id} className="px-2 py-1 bg-slate-200 text-slate-700 text-xs font-medium rounded-full">{tag.text}</span>
-                                    ))}
-                                </div>
+                        {session.tags && session.tags.length > 0 && (
+                          <div>
+                            <h5 className="flex items-center font-semibold text-slate-800 text-sm">
+                              <TagIcon className="mr-2 h-4 w-4 text-slate-500" /> Tags Clínicas
+                            </h5>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {session.tags.map(tag => (<span key={tag.id} className="px-2 py-1 bg-slate-200 text-slate-700 text-xs font-medium rounded-full">{tag.text}</span>))}
                             </div>
+                          </div>
                         )}
                       </div>
-                      {session.notes && (
-                        <div className="border-t border-slate-200 bg-slate-50/50 p-3 flex justify-end items-center">
-                            <Button variant="secondary" onClick={() => onViewSessionNotes(session)} size="sm">
-                                <EyeIcon className="mr-2 h-5 w-5" />
-                                Ver anotação completa
-                            </Button>
+                      <div className="border-t border-slate-200 bg-slate-50/50 p-3 flex justify-between items-center">
+                        <div>
+                          {session.paymentStatus === 'paid' ? (
+                            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Pago</span>
+                          ) : (
+                            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">Pendente</span>
+                          )}
                         </div>
-                      )}
+                        <div className="flex items-center space-x-2">
+                          {session.paymentStatus === 'pending' && canEditSessions && (
+                            <Button variant="secondary" onClick={() => onUpdateSessionStatus(session.id, 'paid')} size="sm">Marcar como Pago</Button>
+                          )}
+                          {session.paymentStatus === 'paid' && canEditSessions && (
+                            <Button variant="ghost" onClick={() => onUpdateSessionStatus(session.id, 'pending')} size="sm">Marcar como Pendente</Button>
+                          )}
+                          {session.notes && (
+                            <Button variant="secondary" onClick={() => onViewSessionNotes(session)} size="sm">
+                              <EyeIcon className="mr-2 h-5 w-5" /> Ver anotação
+                            </Button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -162,6 +166,8 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, currentUser, onA
               )}
             </div>
           )}
+
+          {/* CÓDIGO RESTAURADO ABAIXO */}
           {activeTab === 'profile' && (
              <div className="space-y-6">
                  <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
