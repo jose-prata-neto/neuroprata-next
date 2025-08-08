@@ -1,9 +1,4 @@
-import {
-  userTable,
-  type User,
-  type UserCreate,
-  type UserUpdate,
-} from "@/server/db/schema/user";
+import { userTable, type User, type UserUpdate } from "@/server/db/schema/user";
 import { db } from "@/server/db/index";
 
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";

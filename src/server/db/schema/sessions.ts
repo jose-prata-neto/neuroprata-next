@@ -24,14 +24,14 @@ export const sessionStatusEnum = pgEnum("session_status", [
 ]);
 
 export const sessionTable = pgTable("session", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   date: timestamp("date").notNull(),
   duration: integer("duration").notNull(),
   sessionType: sessionTypeEnum("session_type").notNull(),
   status: sessionStatusEnum("status").default("SCHEDULED").notNull(),
   notes: text("notes").notNull(),
-  patientId: text("patient_id").references(() => patientTable.id),
-  psychologistId: text("psychologist_id").references(() => userTable.id),
+  patientId: uuid("patient_id").references(() => patientTable.id),
+  psychologistId: uuid("psychologist_id").references(() => userTable.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -15,9 +15,9 @@ import {
   addSession,
   deleteSession,
   updateSessionPaymentStatus,
-} from "@/services/storageService";
-import * as authService from "@/services/authService";
-import * as auditLogService from "@/services/auditLogService";
+} from "@/actions/storageService";
+import * as authService from "@/actions/authService";
+import * as auditLogService from "@/actions/auditLogService";
 import { fileToDataURL, getFileType } from "@/utils/formatters";
 
 import Header from "@/components/Header";

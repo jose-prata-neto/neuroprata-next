@@ -14,7 +14,7 @@ import {
   TrashIcon,
 } from "@/constants";
 import ReportsDashboard from "./ReportsDashboard";
-import { logEvent } from "@/services/auditLogService";
+import { logEvent } from "@/actions/auditLogService";
 import {
   formatDate,
   formatBirthDate,

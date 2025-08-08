@@ -1,20 +1,13 @@
 import type { Service } from "@/interfaces/service";
-import { type IAuthRepository } from "../repository";
+import type { IAuthRepository } from "../repository";
+import type { UserLogin } from "@/server/db/schema";
 
 export class LoginService
-  implements
-    Service<
-      IAuthRepository,
-      { email: string; password: string },
-      string | null
-    >
+  implements Service<IAuthRepository, UserLogin, string | null>
 {
   constructor(public repository: IAuthRepository) {}
 
-  async execute(args: {
-    email: string;
-    password: string;
-  }): Promise<string | null> {
+  async execute(args: UserLogin): Promise<string | null> {
     const { email, password } = args;
     return this.repository.login(email, password);
   }

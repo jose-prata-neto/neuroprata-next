@@ -15,7 +15,7 @@ import type { SuggestedTag, Tag } from "@/interfaces";
 import { Session, SessionType } from "@/server/db/schema";
 import { useState } from "react";
 import { getLocalDateTimeString } from "@/utils/formatters";
-import { analyzeSessionNotes } from "@/services/geminiService";
+import { analyzeSessionNotes } from "@/actions/geminiService";
 
 interface SessionEditorDialogProps {
   onSave: (session: Omit<Session, "id">, files: File[]) => Promise<void>;

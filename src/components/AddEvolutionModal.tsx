@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "./Modal";
 import Button from "./Button";
 import { SparklesIcon } from "lucide-react";
-import { analyzeSessionNotes } from "@/services/geminiService";
+import { analyzeSessionNotes } from "@/actions/geminiService";
 import type { SuggestedTag, Tag } from "@/interfaces";
 import { SESSION_TYPES } from "@/interfaces";
 import { getLocalDateTimeString } from "@/utils/formatters";

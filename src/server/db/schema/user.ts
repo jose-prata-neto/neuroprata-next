@@ -19,6 +19,7 @@ export const userTable = pgTable("user", {
 
 export type User = typeof userTable.$inferSelect;
 export type UserCreate = Omit<User, "id" | "createdAt" | "updatedAt" | "salt">;
+export type UserLogin = Pick<User, "email" | "password">;
 export type UserRole = (typeof userRoleEnum.enumValues)[number];
 export type UserUpdate = Partial<
   Omit<User, "id" | "name" | "crp" | "cpf" | "role">

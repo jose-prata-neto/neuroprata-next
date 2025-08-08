@@ -41,7 +41,7 @@ export const paymentTypeEnum = pgEnum("payment_type", [
 ]);
 
 export const paymentTable = pgTable("payment", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   description: text("description"),
   category: paymentCategoryEnum("category").notNull(),
@@ -50,9 +50,9 @@ export const paymentTable = pgTable("payment", {
   paymentType: paymentTypeEnum("payment_type").notNull(),
   paymentMethod: paymentMethodEnum("payment_method"),
 
-  patientId: text("patient_id").references(() => patientTable.id),
-  sessionId: text("session_id").references(() => sessionTable.id),
-  psychologistId: text("psychologist_id").references(() => userTable.id),
+  patientId: uuid("patient_id").references(() => patientTable.id),
+  sessionId: uuid("session_id").references(() => sessionTable.id),
+  psychologistId: uuid("psychologist_id").references(() => userTable.id),
 
   dueDate: timestamp("due_date"),
   paidAt: timestamp("paid_at"),

@@ -13,7 +13,7 @@ export const patientTable = pgTable("patient", {
   medicalHistory: text("medical_history"),
   createdAt: timestamp("created_at").defaultNow(),
   healthPlan: text("health_plan"),
-  psychologistId: text("psychologist_id").references(() => userTable.id),
+  psychologistId: uuid("psychologist_id").references(() => userTable.id),
 });
 
 export type Patient = typeof patientTable.$inferSelect;
