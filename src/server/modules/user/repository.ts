@@ -4,14 +4,14 @@ import { db } from "@/server/db/index";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
 
-interface IUserRepository {
-  findAll: () => Promise<User[]>;
-  findById: (id: string) => Promise<User | null>;
-  update: (id: string, data: UserUpdate) => Promise<User | null>;
-  delete: (id: string) => Promise<boolean>;
+export interface IUserRepository {
+  findAll(): Promise<User[]>;
+  findById(id: string): Promise<User | null>;
+  update(id: string, data: UserUpdate): Promise<User | null>;
+  delete(id: string): Promise<boolean>;
 }
 
-class UserRepository implements IUserRepository {
+export class UserRepository implements IUserRepository {
   private readonly db: PostgresJsDatabase;
 
   constructor(db: PostgresJsDatabase) {

@@ -5,8 +5,8 @@ import { eq } from "drizzle-orm";
 import crypto from "node:crypto";
 
 export interface IAuthRepository {
-  login: (email: string, password: string) => Promise<string | null>;
-  register: (data: UserCreate) => Promise<string | null>;
+  login(email: string, password: string): Promise<string | null>;
+  register(data: UserCreate): Promise<string | null>;
 }
 
 export class AuthRepository implements IAuthRepository {
