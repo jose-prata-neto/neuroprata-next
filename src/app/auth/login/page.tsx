@@ -24,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { type LoginFormData, loginSchema } from "@/models/auth";
+import { type LoginFormData, loginSchema } from "@/models/auth-form";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);

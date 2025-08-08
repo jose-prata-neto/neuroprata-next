@@ -6,15 +6,12 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
-  DialogClose,
   DialogFooter,
-  DialogPortal,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import type { Document, DocumentType } from "@/interfaces";
-import { useState, useEffect } from "react";
+import type { Document } from "@/interfaces";
+import { useState } from "react";
 import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import {
   Select,
   SelectTrigger,
@@ -23,6 +20,17 @@ import {
   SelectItem,
 } from "../ui/select";
 import { FilePlus2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { DocumentFormValues, documentFormSchema } from "@/models/document-form";
 
 interface AddDocumentModalProps {
   onSave: (
@@ -31,62 +39,49 @@ interface AddDocumentModalProps {
   ) => void;
 }
 
-const MAX_FILE_SIZE_MB = 10;
-const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-
 export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState<string>("");
-  const [type, setType] = useState<DocumentType>("report");
-  const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setName("");
-      setType("report");
-      setFile(null);
-      setError(null);
-    }
-  }, [isOpen]);
+  const form = useForm<DocumentFormValues>({
+    resolver: zodResolver(documentFormSchema),
+    defaultValues: {
+      name: "",
+      type: "report",
+      file: undefined,
+    },
+  });
 
-  function validate() {
-    if (!name?.trim() || !file) {
-      setError("Nome do documento e arquivo são obrigatórios.");
-      return false;
-    }
-    return true;
+  function onSubmit(data: DocumentFormValues) {
+    const file = data.file[0];
+    onSave({ name: data.name, type: data.type }, file);
+    setIsOpen(false);
+    form.reset();
   }
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (validate() && file) {
-      onSave({ name, type }, file);
-      setIsOpen(false);
+  function handleFileChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    onChange: (value: FileList) => void
+  ) {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      onChange(files);
+      const currentName = form.getValues("name");
+      if (!currentName.trim()) {
+        const fileName = files[0].name.split(".").slice(0, -1).join(".");
+        form.setValue("name", fileName);
+      }
     }
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const selectedFile = e.target.files?.[0];
-    setError(null);
-
-    if (selectedFile) {
-      if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
-        setError(`O arquivo excede o limite de ${MAX_FILE_SIZE_MB}MB.`);
-        setFile(null);
-        e.target.value = "";
-        return;
-      }
-
-      setFile(selectedFile);
-      if (!name) {
-        setName(selectedFile.name.split(".").slice(0, -1).join("."));
-      }
+  function handleOpenChange(open: boolean) {
+    setIsOpen(open);
+    if (!open) {
+      form.reset();
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
           className="absolute bototm-5 left-5"
@@ -104,30 +99,73 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
             Preencha os detalhes do documento e selecione o arquivo para upload.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <Label>Nome do Documento</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
-          <Label>Arquivo</Label>
-          <Input type="file" onChange={handleFileChange} />
-          <Label>Tipo de Documento</Label>
-          <Select
-            value={type}
-            onValueChange={(value) => setType(value as DocumentType)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue className="w-full" placeholder="Selecione o tipo" />
-            </SelectTrigger>
-            <SelectContent side="top">
-              <SelectItem value="pdf">PDF</SelectItem>
-              <SelectItem value="image">Imagem</SelectItem>
-              <SelectItem value="report">Relatório</SelectItem>
-            </SelectContent>
-          </Select>
 
-          <DialogFooter>
-            <Button type="submit">Salvar</Button>
-          </DialogFooter>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome do Documento</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="file"
+              render={({ field: { onChange, value, ...field } }) => (
+                <FormItem>
+                  <FormLabel>Arquivo</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      {...field}
+                      value=""
+                      onChange={(e) => handleFileChange(e, onChange)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Documento</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent side="top">
+                      <SelectItem value="pdf">PDF</SelectItem>
+                      <SelectItem value="image">Imagem</SelectItem>
+                      <SelectItem value="report">Relatório</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter>
+              <Button type="submit">Salvar</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authServices } from "@/server/modules/auth";
 import { AppError } from "@/utils/error/app-error";
 import type { UserCreate, UserRole } from "@/server/db/schema";
-import type { RegisterFormData } from "@/models/auth";
+import type { RegisterFormData } from "@/models/auth-form";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authServices } from "@/server/modules/auth";
 import { AppError } from "@/utils/error/app-error";
-import type { LoginFormData } from "@/models/auth";
+import type { LoginFormData } from "@/models/auth-form";
 
 export async function POST(request: NextRequest) {
   try {

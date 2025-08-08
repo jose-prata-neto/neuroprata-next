@@ -31,7 +31,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { type RegisterFormData, registerSchema } from "@/models/auth";
+import { type RegisterFormData, registerSchema } from "@/models/auth-form";
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
