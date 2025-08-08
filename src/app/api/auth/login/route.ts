@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authServices } from "@/server/modules/auth";
 import { AppError } from "@/utils/error/app-error";
+import type { LoginFormData } from "@/models/auth";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, password } = body;
+    const { email, password } = body as LoginFormData;
 
     if (!email || !password) {
       return NextResponse.json(

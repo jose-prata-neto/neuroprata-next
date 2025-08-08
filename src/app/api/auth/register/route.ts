@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { authServices } from "@/server/modules/auth";
 import { AppError } from "@/utils/error/app-error";
 import type { UserCreate, UserRole } from "@/server/db/schema";
+import type { RegisterFormData } from "@/models/auth";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { name, email, password, role, crp, cpf } = body;
+    const { name, email, password, role, crp, cpf } = body as RegisterFormData;
 
     if (!name || !email || !password || !role || !crp || !cpf) {
       return NextResponse.json(
