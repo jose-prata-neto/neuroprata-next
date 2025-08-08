@@ -153,7 +153,7 @@ export default function ResetPasswordPage() {
       <CardFooter className="flex-col gap-1">
         <p className="text-sm text-muted-foreground mx-auto">
           Lembrou da senha?{" "}
-          <Link href="/auth" className="text-primary hover:underline">
+          <Link href="/auth/login" className="text-primary hover:underline">
             Fazer login
           </Link>
         </p>
