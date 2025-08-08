@@ -3,6 +3,7 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@tailwindcss/oxide'
   - bufferutil
+  - esbuild
   - msgpackr-extract
   - prisma
   - sharp
