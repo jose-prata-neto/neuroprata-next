@@ -11,7 +11,7 @@ import {
   DialogPortal,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import type { Document } from "@/types";
+import type { Document, DocumentType } from "@/interfaces";
 import { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -34,12 +34,10 @@ interface AddDocumentModalProps {
 const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-type FileType = "pdf" | "image" | "report";
-
 export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState<string>("");
-  const [type, setType] = useState<FileType>("report");
+  const [type, setType] = useState<DocumentType>("report");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,7 +112,7 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
           <Label>Tipo de Documento</Label>
           <Select
             value={type}
-            onValueChange={(value) => setType(value as FileType)}
+            onValueChange={(value) => setType(value as DocumentType)}
           >
             <SelectTrigger className="w-full">
               <SelectValue className="w-full" placeholder="Selecione o tipo" />

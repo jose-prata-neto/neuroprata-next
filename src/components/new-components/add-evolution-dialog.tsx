@@ -10,7 +10,9 @@ import {
 import {} from "../ui/input";
 import {} from "../ui/label";
 import { Button } from "../ui/button";
-import type { Session, SESSION_TYPES, SuggestedTag, Tag } from "@/types";
+import type { SuggestedTag, Tag } from "@/interfaces";
+
+import { Session, SessionType } from "@/server/db/schema";
 import { useState } from "react";
 import { getLocalDateTimeString } from "@/utils/formatters";
 import { analyzeSessionNotes } from "@/services/geminiService";
@@ -19,13 +21,11 @@ interface SessionEditorDialogProps {
   onSave: (session: Omit<Session, "id">, files: File[]) => Promise<void>;
 }
 
-type SessionType = (typeof SESSION_TYPES)[number];
-
 const typeLabels: Record<SessionType, string> = {
-  individual: "Individual",
-  couple: "Casal",
-  family: "Família",
-  group: "Grupal",
+  INDIVIDUAL: "Individual",
+  COUPLE: "Casal",
+  FAMILY: "Família",
+  GROUP: "Grupal",
 };
 
 type Errors = {
@@ -39,7 +39,7 @@ export function AddEvolutionDialog({ onSave }: SessionEditorDialogProps) {
   const [notes, setNotes] = useState("");
   const [duration, setDuration] = useState<number>(50);
   const [sessionDate, setSessionDate] = useState(getLocalDateTimeString());
-  const [sessionType, setSessionType] = useState<SessionType>("individual");
+  const [sessionType, setSessionType] = useState<SessionType>("INDIVIDUAL");
   const [attachments, setAttachments] = useState<File[]>([]);
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -83,7 +83,5 @@ export function AddEvolutionDialog({ onSave }: SessionEditorDialogProps) {
 
   async function handleSave() {
     setIsSaving(true);
-    
   }
-
 }

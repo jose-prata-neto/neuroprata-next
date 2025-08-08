@@ -10,9 +10,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { AddDocumentDialog } from "@/components/new-components/add-document-dialog";
+import { type User } from "@prisma/client";
 
-export default function AuthPage() {
+export default async function AuthPage() {
+  async function getUsers() {
+    const res = await fetch("http://localhost:3000/api/users");
+    return res.json() as Promise<User[]>;
+  }
+
+  const users = await getUsers();
+
   return (
     <main className="h-screen w-full flex items-center justify-center p-4">
       <Card className="w-96">
@@ -54,6 +61,14 @@ export default function AuthPage() {
           </p>
         </CardFooter>
       </Card>
+      <div className="absolute top-5 right-5">
+        {users.map((user) => (
+          <div key={user.id}>
+            <p>{user.email}</p>
+            <p>{user.passwordHash}</p>
+          </div>
+        ))}
+      </div>
     </main>
   );
 }

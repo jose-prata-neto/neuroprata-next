@@ -1,12 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { SuggestedTag } from '@/types';
+import type { SuggestedTag } from "@/interfaces";
 
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
 if (!genAI) {
-  console.warn("NEXT_PUBLIC_GEMINI_API_KEY environment variable not set. AI features will be disabled.");
+  console.warn(
+    "NEXT_PUBLIC_GEMINI_API_KEY environment variable not set. AI features will be disabled."
+  );
 }
 
 interface GeminiTagResponse {
@@ -14,7 +16,9 @@ interface GeminiTagResponse {
   relevance: number;
 }
 
-export const analyzeSessionNotes = async (notes: string): Promise<SuggestedTag[]> => {
+export const analyzeSessionNotes = async (
+  notes: string
+): Promise<SuggestedTag[]> => {
   if (!genAI) {
     console.warn("Gemini AI client not initialized, NLP analysis is disabled.");
     return Promise.resolve([]);
@@ -23,9 +27,9 @@ export const analyzeSessionNotes = async (notes: string): Promise<SuggestedTag[]
   if (!notes.trim()) {
     return Promise.resolve([]);
   }
-  
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
-  
+
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
   const prompt = `Como um microserviço de NLP especializado em psicologia, analise o texto da sessão a seguir. Sua tarefa é:
 1. Identificar entidades clínicas chave, temas, emoções e tópicos discutidos (ex: "ansiedade social", "crise de pânico", "luto", "conflito familiar", "ideação suicida").
 2. Para cada tema identificado, gere uma tag curta e concisa em português.
@@ -37,11 +41,14 @@ Texto da sessão:
 """
 ${notes}
 """`;
-    
+
   try {
     const result = await model.generateContent(prompt);
     const response = result.response;
-    const text = response.text().replace(/```json|```/g, '').trim();
+    const text = response
+      .text()
+      .replace(/```json|```/g, "")
+      .trim();
     const jsonResponse: GeminiTagResponse[] = JSON.parse(text);
 
     const suggestedTags: SuggestedTag[] = jsonResponse.map((item) => ({
@@ -49,11 +56,10 @@ ${notes}
       text: item.tag,
       relevance: item.relevance,
     }));
-    
-    return suggestedTags.sort((a, b) => b.relevance - a.relevance);
 
+    return suggestedTags.sort((a, b) => b.relevance - a.relevance);
   } catch (error) {
     console.error("Error analyzing session notes with Gemini:", error);
-    return [{ id: 'error', text: 'Erro na análise de IA', relevance: 1.0 }];
+    return [{ id: "error", text: "Erro na análise de IA", relevance: 1.0 }];
   }
 };

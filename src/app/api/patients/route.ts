@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // <-- Importa o nosso novo cliente centralizado
-import type { Patient } from '@/types';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma"; // <-- Importa o nosso novo cliente centralizado
+import type { Patient } from "@/interfaces";
 
 export async function GET() {
   try {
     const patients = await prisma.patient.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: { sessions: { orderBy: { date: 'desc' } } },
+      orderBy: { createdAt: "desc" },
+      include: { sessions: { orderBy: { date: "desc" } } },
     });
     return NextResponse.json(patients);
   } catch (error) {
@@ -17,11 +17,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json() as Omit<Patient, 'id' | 'createdAt'>;
+    const body = (await request.json()) as Omit<Patient, "id" | "createdAt">;
     const { sessions, documents, ...dataToSave } = body;
 
     if (!dataToSave.name || !dataToSave.cpf || !dataToSave.birthDate) {
-      return new NextResponse('Dados do paciente incompletos', { status: 400 });
+      return new NextResponse("Dados do paciente incompletos", { status: 400 });
     }
 
     const newPatient = await prisma.patient.create({

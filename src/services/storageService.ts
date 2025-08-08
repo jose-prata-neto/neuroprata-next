@@ -1,10 +1,10 @@
-import type { Patient, Session } from '@/types';
+import type { Patient, Session } from "@/interfaces";
 
 export const getPatients = async (): Promise<Patient[]> => {
   try {
-    const response = await fetch('/api/patients');
+    const response = await fetch("/api/patients");
     if (!response.ok) {
-      throw new Error('Falha ao buscar pacientes da API');
+      throw new Error("Falha ao buscar pacientes da API");
     }
     const patientsFromApi: Patient[] = await response.json();
     return patientsFromApi.map((patient) => ({
@@ -18,15 +18,17 @@ export const getPatients = async (): Promise<Patient[]> => {
   }
 };
 
-export const addPatient = async (patientData: Omit<Patient, 'id' | 'createdAt' | 'sessions' | 'documents'>): Promise<Patient> => {
+export const addPatient = async (
+  patientData: Omit<Patient, "id" | "createdAt" | "sessions" | "documents">
+): Promise<Patient> => {
   try {
-    const response = await fetch('/api/patients', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/patients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patientData),
     });
     if (!response.ok) {
-      throw new Error('Falha ao criar paciente');
+      throw new Error("Falha ao criar paciente");
     }
     return await response.json();
   } catch (error) {
@@ -36,13 +38,19 @@ export const addPatient = async (patientData: Omit<Patient, 'id' | 'createdAt' |
 };
 
 // DEBBUGING: Adicionados console.log para seguir o fluxo
-export const addSession = async (sessionData: Omit<Session, 'id' | 'attachments' | 'tags'> & { patientId: string }): Promise<Session> => {
-  console.log("4. A função addSession no storageService foi chamada. A fazer a chamada de rede para /api/sessions...");
+export const addSession = async (
+  sessionData: Omit<Session, "id" | "attachments" | "tags"> & {
+    patientId: string;
+  }
+): Promise<Session> => {
+  console.log(
+    "4. A função addSession no storageService foi chamada. A fazer a chamada de rede para /api/sessions..."
+  );
   try {
-    const response = await fetch('/api/sessions', {
-      method: 'POST',
+    const response = await fetch("/api/sessions", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(sessionData),
     });
@@ -63,29 +71,32 @@ export const addSession = async (sessionData: Omit<Session, 'id' | 'attachments'
 export const deleteSession = async (sessionId: string): Promise<void> => {
   try {
     const response = await fetch(`/api/sessions/${sessionId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
 
     if (!response.ok) {
-      throw new Error('Falha ao apagar sessão');
+      throw new Error("Falha ao apagar sessão");
     }
   } catch (error) {
     console.error("Falha ao apagar sessão via API", error);
     throw error;
   }
 };
-export const updateSessionPaymentStatus = async (sessionId: string, status: 'paid' | 'pending'): Promise<Session> => {
+export const updateSessionPaymentStatus = async (
+  sessionId: string,
+  status: "paid" | "pending"
+): Promise<Session> => {
   try {
     const response = await fetch(`/api/sessions/${sessionId}`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ paymentStatus: status }),
     });
 
     if (!response.ok) {
-      throw new Error('Falha ao atualizar o estado do pagamento da sessão');
+      throw new Error("Falha ao atualizar o estado do pagamento da sessão");
     }
     return await response.json();
   } catch (error) {
