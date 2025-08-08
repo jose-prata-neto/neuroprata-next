@@ -268,7 +268,7 @@ export default function RegisterPage() {
       <CardFooter className="flex-col gap-1">
         <p className="text-sm text-muted-foreground mx-auto">
           Já tem uma conta?{" "}
-          <Link href="/auth" className="text-primary hover:underline">
+          <Link href="/auth/login" className="text-primary hover:underline">
             Fazer login
           </Link>
         </p>
