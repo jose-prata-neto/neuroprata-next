@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
-import Modal from "./Modal";
-import Button from "./Button";
-import type { Patient } from "@/interfaces";
-import { useUploadThing } from "@/lib/uploadthing"; // Importa o nosso novo hook
-import Image from "next/image";
+import Image from 'next/image';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { useUploadThing } from '@/lib/uploadthing';
+import type { Patient } from '@/server/db/schema';
+import Button from './Button';
+import Modal from './Modal';
 
 interface AddPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (
-    patient: Omit<Patient, "id" | "createdAt" | "sessions" | "documents">
+    patient: Omit<Patient, 'id' | 'createdAt' | 'sessions' | 'documents'>
   ) => void;
 }
 
@@ -18,17 +19,17 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [name, setName] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [medicalHistory, setMedicalHistory] = useState("");
+  const [name, setName] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [medicalHistory, setMedicalHistory] = useState('');
   const [consent, setConsent] = useState(false);
-  const [paymentType, setPaymentType] = useState<"particular" | "plano">(
-    "particular"
+  const [paymentType, setPaymentType] = useState<'particular' | 'plano'>(
+    'particular'
   );
-  const [healthPlan, setHealthPlan] = useState("");
+  const [healthPlan, setHealthPlan] = useState('');
 
   // Novos estados para controlar o ficheiro e o upload
   const [photoFile, setPhotoFile] = useState<File[]>([]);
@@ -38,20 +39,20 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
   const [isSaving, setIsSaving] = useState(false);
 
   // Hook do UploadThing
-  const { startUpload } = useUploadThing("imageUploader");
+  const { startUpload } = useUploadThing('imageUploader');
 
   const resetForm = () => {
-    setName("");
-    setCpf("");
-    setEmail("");
-    setPhone("");
-    setBirthDate("");
-    setMedicalHistory("");
+    setName('');
+    setCpf('');
+    setEmail('');
+    setPhone('');
+    setBirthDate('');
+    setMedicalHistory('');
     setConsent(false);
     setPhotoFile([]);
     setPhotoPreview(undefined);
-    setPaymentType("particular");
-    setHealthPlan("");
+    setPaymentType('particular');
+    setHealthPlan('');
   };
 
   useEffect(() => {
@@ -75,13 +76,13 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
   // Função de submissão do formulário refatorada
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !birthDate || !cpf) {
-      alert("Nome, CPF e Data de Nascimento são obrigatórios.");
+    if (!(name && birthDate && cpf)) {
+      alert('Nome, CPF e Data de Nascimento são obrigatórios.');
       return;
     }
     setIsSaving(true);
 
-    let uploadedPhotoUrl: string | undefined = undefined;
+    let uploadedPhotoUrl: string | undefined;
 
     // 1. Se houver uma foto, faz o upload primeiro
     if (photoFile.length > 0 && startUpload) {
@@ -89,7 +90,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
       if (uploadResult && uploadResult[0]) {
         uploadedPhotoUrl = uploadResult[0].url;
       } else {
-        alert("Ocorreu um erro ao fazer o upload da foto.");
+        alert('Ocorreu um erro ao fazer o upload da foto.');
         setIsSaving(false);
         return;
       }
@@ -106,7 +107,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
       consent,
       photoUrl: uploadedPhotoUrl,
       paymentType,
-      healthPlan: paymentType === "plano" ? healthPlan : undefined,
+      healthPlan: paymentType === 'plano' ? healthPlan : undefined,
     });
 
     setIsSaving(false);
@@ -114,19 +115,19 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Adicionar Novo Paciente">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block font-medium text-slate-700 text-sm">
             Foto do Paciente
           </label>
           <div className="mt-1 flex items-center space-x-4">
-            <span className="relative inline-block h-12 w-12 rounded-full overflow-hidden bg-slate-100">
+            <span className="relative inline-block h-12 w-12 overflow-hidden rounded-full bg-slate-100">
               {photoPreview ? (
                 <Image
-                  src={photoPreview}
                   alt="Preview"
-                  fill
                   className="object-cover"
+                  fill
+                  src={photoPreview}
                 />
               ) : (
                 <svg
@@ -140,11 +141,11 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
             </span>
             {/* Mantemos o nosso input, que agora é controlado pela nossa lógica */}
             <input
-              type="file"
-              id="photo"
               accept="image/*"
+              className="block w-full text-slate-500 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-slate-50 file:px-4 file:py-2 file:font-semibold file:text-slate-700 file:text-sm hover:file:bg-slate-100"
+              id="photo"
               onChange={handlePhotoChange}
-              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-50 file:text-slate-700 hover:file:bg-slate-100"
+              type="file"
             />
           </div>
         </div>
@@ -153,171 +154,171 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label
+              className="block font-medium text-slate-700 text-sm"
               htmlFor="name"
-              className="block text-sm font-medium text-slate-700"
             >
               Nome Completo *
             </label>
             <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
               className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+              id="name"
+              onChange={(e) => setName(e.target.value)}
               required
+              type="text"
+              value={name}
             />
           </div>
           <div>
             <label
+              className="block font-medium text-slate-700 text-sm"
               htmlFor="cpf"
-              className="block text-sm font-medium text-slate-700"
             >
               CPF *
             </label>
             <input
-              type="text"
-              id="cpf"
-              value={cpf}
-              onChange={(e) => setCpf(e.target.value)}
               className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+              id="cpf"
+              onChange={(e) => setCpf(e.target.value)}
               required
+              type="text"
+              value={cpf}
             />
           </div>
           <div>
             <label
+              className="block font-medium text-slate-700 text-sm"
               htmlFor="email"
-              className="block text-sm font-medium text-slate-700"
             >
               Email
             </label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              value={email}
             />
           </div>
           <div>
             <label
+              className="block font-medium text-slate-700 text-sm"
               htmlFor="phone"
-              className="block text-sm font-medium text-slate-700"
             >
               Telefone
             </label>
             <input
-              type="tel"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
               className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+              id="phone"
+              onChange={(e) => setPhone(e.target.value)}
+              type="tel"
+              value={phone}
             />
           </div>
           <div>
             <label
+              className="block font-medium text-slate-700 text-sm"
               htmlFor="birthDate"
-              className="block text-sm font-medium text-slate-700"
             >
               Data de Nascimento *
             </label>
             <input
-              type="date"
-              id="birthDate"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
               className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+              id="birthDate"
+              onChange={(e) => setBirthDate(e.target.value)}
               required
+              type="date"
+              value={birthDate}
             />
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-slate-700">
+            <label className="block font-medium text-slate-700 text-sm">
               Tipo de Pagamento *
             </label>
-            <div className="mt-1 flex items-center space-x-6 rounded-md border border-slate-300 p-2 bg-white">
+            <div className="mt-1 flex items-center space-x-6 rounded-md border border-slate-300 bg-white p-2">
               <div className="flex items-center">
                 <input
+                  checked={paymentType === 'particular'}
+                  className="h-4 w-4 border-slate-300 text-slate-600 focus:ring-slate-500"
                   id="particular"
                   name="paymentType"
+                  onChange={() => setPaymentType('particular')}
                   type="radio"
                   value="particular"
-                  checked={paymentType === "particular"}
-                  onChange={() => setPaymentType("particular")}
-                  className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300"
                 />
                 <label
+                  className="ml-2 block font-medium text-slate-700 text-sm"
                   htmlFor="particular"
-                  className="ml-2 block text-sm font-medium text-slate-700"
                 >
                   Particular
                 </label>
               </div>
               <div className="flex items-center">
                 <input
+                  checked={paymentType === 'plano'}
+                  className="h-4 w-4 border-slate-300 text-slate-600 focus:ring-slate-500"
                   id="plano"
                   name="paymentType"
+                  onChange={() => setPaymentType('plano')}
                   type="radio"
                   value="plano"
-                  checked={paymentType === "plano"}
-                  onChange={() => setPaymentType("plano")}
-                  className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300"
                 />
                 <label
+                  className="ml-2 block font-medium text-slate-700 text-sm"
                   htmlFor="plano"
-                  className="ml-2 block text-sm font-medium text-slate-700"
                 >
                   Plano de Saúde
                 </label>
               </div>
             </div>
           </div>
-          {paymentType === "plano" && (
+          {paymentType === 'plano' && (
             <div className="sm:col-span-2">
               <label
+                className="block font-medium text-slate-700 text-sm"
                 htmlFor="healthPlan"
-                className="block text-sm font-medium text-slate-700"
               >
                 Nome do Plano de Saúde *
               </label>
               <input
-                type="text"
-                id="healthPlan"
-                value={healthPlan}
-                onChange={(e) => setHealthPlan(e.target.value)}
                 className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+                id="healthPlan"
+                onChange={(e) => setHealthPlan(e.target.value)}
                 required
+                type="text"
+                value={healthPlan}
               />
             </div>
           )}
         </div>
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="medicalHistory"
-            className="block text-sm font-medium text-slate-700"
           >
             Histórico Médico
           </label>
           <textarea
-            id="medicalHistory"
-            value={medicalHistory}
-            onChange={(e) => setMedicalHistory(e.target.value)}
-            rows={3}
             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            id="medicalHistory"
+            onChange={(e) => setMedicalHistory(e.target.value)}
             placeholder="Resumo do histórico médico, alergias, medicamentos..."
+            rows={3}
+            value={medicalHistory}
           />
         </div>
         <div className="flex items-start">
           <div className="flex h-5 items-center">
             <input
+              checked={consent}
+              className="h-4 w-4 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
               id="consent"
               name="consent"
-              type="checkbox"
-              checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
+              type="checkbox"
             />
           </div>
           <div className="ml-3 text-sm">
-            <label htmlFor="consent" className="font-medium text-slate-700">
+            <label className="font-medium text-slate-700" htmlFor="consent">
               Consentimento Digital
             </label>
             <p className="text-slate-500">
@@ -326,11 +327,11 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
           </div>
         </div>
         <div className="flex justify-end space-x-3 pt-4">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button onClick={onClose} type="button" variant="secondary">
             Cancelar
           </Button>
-          <Button type="submit" isLoading={isSaving}>
-            {isSaving ? "Salvando..." : "Salvar Paciente"}
+          <Button isLoading={isSaving} type="submit">
+            {isSaving ? 'Salvando...' : 'Salvar Paciente'}
           </Button>
         </div>
       </form>

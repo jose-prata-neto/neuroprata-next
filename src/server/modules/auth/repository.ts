@@ -1,8 +1,8 @@
-import { UserCreate, userTable } from "@/server/db/schema";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { db } from "@/server/db";
-import { eq } from "drizzle-orm";
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
+import { eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { db } from '@/server/db';
+import { type UserCreate, userTable } from '@/server/db/schema';
 
 export interface IAuthRepository {
   login(email: string, password: string): Promise<string | null>;
@@ -12,8 +12,8 @@ export interface IAuthRepository {
 export class AuthRepository implements IAuthRepository {
   private readonly db: PostgresJsDatabase;
 
-  constructor(db: PostgresJsDatabase) {
-    this.db = db;
+  constructor(inputDb: PostgresJsDatabase) {
+    this.db = inputDb;
   }
 
   async register(data: UserCreate) {
@@ -24,15 +24,15 @@ export class AuthRepository implements IAuthRepository {
       .then((r) => r[0]);
 
     if (existingUser) {
-      throw new Error("User with this email already exists");
+      throw new Error('User with this email already exists');
     }
 
-    const salt = crypto.randomBytes(16).toString("hex");
+    const salt = crypto.randomBytes(16).toString('hex');
 
     const hashedPassword = crypto
-      .createHash("sha256")
+      .createHash('sha256')
       .update(data.password + salt)
-      .digest("hex");
+      .digest('hex');
 
     const res = await this.db
       .insert(userTable)
@@ -58,9 +58,9 @@ export class AuthRepository implements IAuthRepository {
     }
 
     const hashedPassword = crypto
-      .createHash("sha256")
+      .createHash('sha256')
       .update(password + user.salt)
-      .digest("hex");
+      .digest('hex');
 
     if (hashedPassword !== user.password) {
       return null;

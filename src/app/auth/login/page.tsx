@@ -1,14 +1,19 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  CardFooter,
   Card,
-} from "@/components/ui/card";
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -16,15 +21,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { type LoginFormData, loginSchema } from "@/models/auth-form";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { type LoginFormData, loginSchema } from '@/models/auth-form';
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,15 +31,15 @@ export default function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const success = searchParams.get("success");
+  const success = searchParams.get('success');
   const successMessage =
-    success === "registration" ? "Conta criada com sucesso! Faça login." : null;
+    success === 'registration' ? 'Conta criada com sucesso! Faça login.' : null;
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -49,10 +48,10 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: data.email,
@@ -63,13 +62,13 @@ export default function AuthPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Falha no login");
+        throw new Error(result.error || 'Falha no login');
       }
 
-      router.push("/dashboard");
+      router.push('/dashboard');
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Ocorreu um erro inesperado"
+        err instanceof Error ? err.message : 'Ocorreu um erro inesperado'
       );
     } finally {
       setIsLoading(false);
@@ -86,19 +85,19 @@ export default function AuthPage() {
       </CardHeader>
       <CardContent>
         {successMessage && (
-          <div className="mb-4 p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
+          <div className="mb-4 rounded-md border border-green-200 bg-green-50 p-3 text-green-600 text-sm">
             {successMessage}
           </div>
         )}
 
         {error && (
-          <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-600 text-sm">
             {error}
           </div>
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="email"
@@ -107,8 +106,8 @@ export default function AuthPage() {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       placeholder="Digite seu email"
+                      type="email"
                       {...field}
                       disabled={isLoading}
                     />
@@ -126,8 +125,8 @@ export default function AuthPage() {
                   <FormLabel>Senha</FormLabel>
                   <FormControl>
                     <Input
-                      type="password"
                       placeholder="Digite sua senha"
+                      type="password"
                       {...field}
                       disabled={isLoading}
                     />
@@ -137,25 +136,25 @@ export default function AuthPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Fazendo login..." : "Entrar"}
+            <Button className="w-full" disabled={isLoading} type="submit">
+              {isLoading ? 'Fazendo login...' : 'Entrar'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex-col gap-1">
-        <p className="text-sm text-muted-foreground mx-auto">
-          Esqueceu sua senha?{" "}
+        <p className="mx-auto text-muted-foreground text-sm">
+          Esqueceu sua senha?{' '}
           <Link
-            href="/auth/reset-password"
             className="text-primary hover:underline"
+            href="/auth/reset-password"
           >
             Recuperar aqui
           </Link>
         </p>
-        <p className="text-sm text-muted-foreground mx-auto">
-          Não tem uma conta?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
+        <p className="mx-auto text-muted-foreground text-sm">
+          Não tem uma conta?{' '}
+          <Link className="text-primary hover:underline" href="/auth/register">
             Cadastre-se
           </Link>
         </p>

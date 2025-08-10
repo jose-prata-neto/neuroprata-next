@@ -1,14 +1,14 @@
-import type { Service } from "@/interfaces/service";
-import type { IAuthRepository } from "../repository";
-import type { UserLogin } from "@/server/db/schema";
+import { Service } from '@/interfaces/service';
+import type { UserLogin } from '@/server/db/schema';
+import type { IAuthRepository } from '../repository';
 
-export class LoginService
-  implements Service<IAuthRepository, UserLogin, string | null>
-{
-  constructor(public repository: IAuthRepository) {}
-
+export class LoginService extends Service<
+  IAuthRepository,
+  UserLogin,
+  string | null
+> {
   async execute(args: UserLogin): Promise<string | null> {
     const { email, password } = args;
-    return this.repository.login(email, password);
+    return await this.repository.login(email, password);
   }
 }

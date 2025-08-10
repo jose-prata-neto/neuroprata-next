@@ -1,31 +1,28 @@
-"use client";
+'use client';
+import { useState } from 'react';
+import { analyzeSessionNotes } from '@/actions/geminiService';
+import type { SuggestedTag, Tag } from '@/interfaces';
+import type { Session, SessionType } from '@/server/db/schema';
+import { getLocalDateTimeString } from '@/utils/formatters';
+import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
-} from "../ui/dialog";
-import {} from "../ui/input";
-import {} from "../ui/label";
-import { Button } from "../ui/button";
-import type { SuggestedTag, Tag } from "@/interfaces";
-
-import { Session, SessionType } from "@/server/db/schema";
-import { useState } from "react";
-import { getLocalDateTimeString } from "@/utils/formatters";
-import { analyzeSessionNotes } from "@/actions/geminiService";
+} from '../ui/dialog';
 
 interface SessionEditorDialogProps {
-  onSave: (session: Omit<Session, "id">, files: File[]) => Promise<void>;
+  onSave: (session: Omit<Session, 'id'>, files: File[]) => Promise<void>;
 }
 
 const typeLabels: Record<SessionType, string> = {
-  INDIVIDUAL: "Individual",
-  COUPLE: "Casal",
-  FAMILY: "Família",
-  GROUP: "Grupal",
+  INDIVIDUAL: 'Individual',
+  COUPLE: 'Casal',
+  FAMILY: 'Família',
+  GROUP: 'Grupal',
 };
 
 type Errors = {
@@ -33,13 +30,13 @@ type Errors = {
   duration?: string;
 };
 
-type Views = "editor" | "review";
+type Views = 'editor' | 'review';
 
 export function AddEvolutionDialog({ onSave }: SessionEditorDialogProps) {
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState('');
   const [duration, setDuration] = useState<number>(50);
   const [sessionDate, setSessionDate] = useState(getLocalDateTimeString());
-  const [sessionType, setSessionType] = useState<SessionType>("INDIVIDUAL");
+  const [sessionType, setSessionType] = useState<SessionType>('INDIVIDUAL');
   const [attachments, setAttachments] = useState<File[]>([]);
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -47,16 +44,16 @@ export function AddEvolutionDialog({ onSave }: SessionEditorDialogProps) {
   const [error, setError] = useState<Errors | null>(null);
   const [suggestedTags, setSuggestedTags] = useState<SuggestedTag[]>([]);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [view, setView] = useState<Views>("editor");
+  const [view, setView] = useState<Views>('editor');
 
   function validate() {
     const newErrors: Errors = {};
 
     if (!notes.trim()) {
-      newErrors.notes = "Notas são obrigatórias.";
+      newErrors.notes = 'Notas são obrigatórias.';
     }
     if (duration <= 0) {
-      newErrors.duration = "Duração deve ser maior que zero.";
+      newErrors.duration = 'Duração deve ser maior que zero.';
     }
     setError(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -70,7 +67,7 @@ export function AddEvolutionDialog({ onSave }: SessionEditorDialogProps) {
     setSuggestedTags(tags);
     setSelectedTags(tags.filter((t) => t.relevance > 0.6));
     setIsAnalyzing(false);
-    setView("review");
+    setView('review');
   }
 
   function toggleTagApproval(tag: Tag) {

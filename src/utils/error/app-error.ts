@@ -1,4 +1,4 @@
-import { AppErrorCode, AppErrorHttpStatusMap } from "./status";
+import { type AppErrorCode, AppErrorHttpStatusMap } from './status';
 
 interface AppErrorOptions {
   code: AppErrorCode;
@@ -22,19 +22,10 @@ export class AppError extends Error {
   readonly field?: string;
   readonly expected?: string;
   readonly actual?: string;
-  readonly name = "AppError";
+  readonly name = 'AppError';
 
   constructor(opts: AppErrorOptions) {
-    const defaultMessage =
-      opts.message ??
-      (opts.field && opts.expected && opts.actual
-        ? `Invalid value for '${opts.field}': expected ${opts.expected}, got ${opts.actual}`
-        : opts.resource && opts.resourceId
-        ? `Operation failed on ${opts.resource} with id '${opts.resourceId}'`
-        : opts.resource
-        ? `Operation failed on ${opts.resource}`
-        : undefined);
-
+    const defaultMessage = AppError.buildDefaultMessage(opts);
     super(defaultMessage);
 
     this.httpStatus = AppErrorHttpStatusMap[opts.code];
@@ -45,24 +36,65 @@ export class AppError extends Error {
     this.field = opts.field;
     this.expected = opts.expected;
     this.actual = opts.actual;
-
-    const newMeta: Record<string, unknown> = {};
-
-    if (opts.resource) newMeta.resource = opts.resource;
-    if (opts.resourceId) newMeta.resourceId = opts.resourceId;
-    if (opts.field) newMeta.field = opts.field;
-    if (opts.expected) newMeta.expected = opts.expected;
-    if (opts.actual) newMeta.actual = opts.actual;
-
-    this.meta = opts.meta
-      ? { ...newMeta, ...opts.meta }
-      : Object.keys(newMeta).length > 0
-      ? newMeta
-      : undefined;
+    this.meta = AppError.buildMeta(opts);
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
+  }
+
+  private static buildDefaultMessage(
+    opts: AppErrorOptions
+  ): string | undefined {
+    if (opts.message) {
+      return opts.message;
+    }
+
+    if (opts.field && opts.expected && opts.actual) {
+      return `Invalid value for '${opts.field}': expected ${opts.expected}, got ${opts.actual}`;
+    }
+
+    if (opts.resource && opts.resourceId) {
+      return `Operation failed on ${opts.resource} with id '${opts.resourceId}'`;
+    }
+
+    if (opts.resource) {
+      return `Operation failed on ${opts.resource}`;
+    }
+
+    return;
+  }
+
+  private static buildMeta(
+    opts: AppErrorOptions
+  ): Record<string, unknown> | undefined {
+    const newMeta: Record<string, unknown> = {};
+
+    if (opts.resource) {
+      newMeta.resource = opts.resource;
+    }
+    if (opts.resourceId) {
+      newMeta.resourceId = opts.resourceId;
+    }
+    if (opts.field) {
+      newMeta.field = opts.field;
+    }
+    if (opts.expected) {
+      newMeta.expected = opts.expected;
+    }
+    if (opts.actual) {
+      newMeta.actual = opts.actual;
+    }
+
+    if (opts.meta) {
+      return { ...newMeta, ...opts.meta };
+    }
+
+    if (Object.keys(newMeta).length > 0) {
+      return newMeta;
+    }
+
+    return;
   }
 
   toJSON() {
@@ -93,14 +125,14 @@ export class AppError extends Error {
 
   static from(
     error: unknown,
-    defaultCode: AppErrorCode = "INTERNAL_SERVER_ERROR"
+    defaultCode: AppErrorCode = 'INTERNAL_SERVER_ERROR'
   ): AppError {
     if (error instanceof AppError) {
       return error;
     }
 
     const message =
-      error instanceof Error ? error.message : String(error ?? "Unkown error");
+      error instanceof Error ? error.message : String(error ?? 'Unkown error');
 
     return new AppError({ code: defaultCode, message, cause: error });
   }

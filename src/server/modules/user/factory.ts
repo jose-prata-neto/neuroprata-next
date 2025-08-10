@@ -1,11 +1,11 @@
-import { UserRepository, IUserRepository } from "./repository";
+import { db } from '@/server/db';
+import { type IUserRepository, UserRepository } from './repository';
 import {
   DeleteUserService,
-  UpdateUserService,
   FindAllUsersService,
   FindUserByIDService,
-} from "./services";
-import { db } from "@/server/db";
+  UpdateUserService,
+} from './services';
 
 function userFactory<T>(Service: new (repository: IUserRepository) => T) {
   return new Service(new UserRepository(db));

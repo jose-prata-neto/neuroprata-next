@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import Button from "./Button";
-import type { RegisterData } from "@/interfaces";
-import { NeuronIcon } from "@/constants";
+import { Brain } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import type { RegisterData } from '@/interfaces';
+import Button from './Button';
 
 interface AuthPageProps {
   onLogin: (
@@ -15,11 +16,11 @@ interface AuthPageProps {
 
 const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
   const [isLoginView, setIsLoginView] = useState(true);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"psychologist" | "staff">("psychologist");
-  const [identifier, setIdentifier] = useState(""); // Holds CRP or CPF
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'psychologist' | 'staff'>('psychologist');
+  const [identifier, setIdentifier] = useState(''); // Holds CRP or CPF
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,9 +33,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
     if (isLoginView) {
       result = await onLogin(email, password);
     } else {
-      if (!name || !identifier) {
+      if (!(name && identifier)) {
         setError(
-          `Nome e ${role === "psychologist" ? "CRP" : "CPF"} são obrigatórios.`
+          `Nome e ${role === 'psychologist' ? 'CRP' : 'CPF'} são obrigatórios.`
         );
         setIsLoading(false);
         return;
@@ -43,7 +44,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
     }
 
     if (result && !result.success) {
-      setError(result.error || "Ocorreu um erro.");
+      setError(result.error || 'Ocorreu um erro.');
     }
     setIsLoading(false);
   };
@@ -51,145 +52,145 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin, onRegister }) => {
   const toggleView = () => {
     setIsLoginView(!isLoginView);
     setError(null);
-    setEmail("");
-    setPassword("");
-    setName("");
-    setIdentifier("");
+    setEmail('');
+    setPassword('');
+    setName('');
+    setIdentifier('');
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
         <div className="text-center">
-          <NeuronIcon className="mx-auto h-12 w-12 text-slate-800" />
-          <h1 className="mt-3 text-3xl font-bold text-slate-800">NeuroPrata</h1>
+          <Brain className="mx-auto h-12 w-12 text-slate-800" />
+          <h1 className="mt-3 font-bold text-3xl text-slate-800">NeuroPrata</h1>
           <p className="mt-1 text-slate-500">
-            {isLoginView ? "Bem-vindo(a) de volta!" : "Crie sua conta"}
+            {isLoginView ? 'Bem-vindo(a) de volta!' : 'Crie sua conta'}
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
           {!isLoginView && (
             <>
               <div>
-                <label className="block text-sm font-medium text-slate-700">
+                <label className="block font-medium text-slate-700 text-sm">
                   Tipo de Conta
                 </label>
                 <div className="mt-1 grid grid-cols-2 gap-2 rounded-md bg-slate-100 p-1">
                   <button
-                    type="button"
-                    onClick={() => setRole("psychologist")}
-                    className={`px-3 py-1 text-sm font-semibold rounded ${
-                      role === "psychologist"
-                        ? "bg-white shadow text-slate-800"
-                        : "text-slate-600"
+                    className={`rounded px-3 py-1 font-semibold text-sm ${
+                      role === 'psychologist'
+                        ? 'bg-white text-slate-800 shadow'
+                        : 'text-slate-600'
                     }`}
+                    onClick={() => setRole('psychologist')}
+                    type="button"
                   >
                     Psicólogo(a)
                   </button>
                   <button
-                    type="button"
-                    onClick={() => setRole("staff")}
-                    className={`px-3 py-1 text-sm font-semibold rounded ${
-                      role === "staff"
-                        ? "bg-white shadow text-slate-800"
-                        : "text-slate-600"
+                    className={`rounded px-3 py-1 font-semibold text-sm ${
+                      role === 'staff'
+                        ? 'bg-white text-slate-800 shadow'
+                        : 'text-slate-600'
                     }`}
+                    onClick={() => setRole('staff')}
+                    type="button"
                   >
                     Funcionário(a)
                   </button>
                 </div>
               </div>
               <div>
-                <label htmlFor="name" className="sr-only">
+                <label className="sr-only" htmlFor="name">
                   Nome
                 </label>
                 <input
+                  autoComplete="name"
+                  className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
                   id="name"
                   name="name"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
                   placeholder="Nome Completo"
+                  required
+                  type="text"
+                  value={name}
                 />
               </div>
             </>
           )}
           <div>
-            <label htmlFor="email-address" className="sr-only">
+            <label className="sr-only" htmlFor="email-address">
               Email
             </label>
             <input
+              autoComplete="email"
+              className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
               id="email-address"
               name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
               placeholder="Email"
+              required
+              type="email"
+              value={email}
             />
           </div>
           <div>
-            <label htmlFor="password" className="sr-only">
+            <label className="sr-only" htmlFor="password">
               Senha
             </label>
             <input
+              autoComplete="current-password"
+              className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
               id="password"
               name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
               placeholder="Senha"
+              required
+              type="password"
+              value={password}
             />
           </div>
           {!isLoginView && (
             <div>
-              <label htmlFor="identifier" className="sr-only">
-                {role === "psychologist" ? "CRP" : "CPF"}
+              <label className="sr-only" htmlFor="identifier">
+                {role === 'psychologist' ? 'CRP' : 'CPF'}
               </label>
               <input
+                className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
                 id="identifier"
                 name="identifier"
-                type="text"
-                required
-                value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="relative block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 text-slate-900 placeholder-slate-500 focus:z-10 focus:border-slate-500 focus:outline-none focus:ring-slate-500 sm:text-sm"
                 placeholder={
-                  role === "psychologist"
-                    ? "CRP (ex: 06/123456)"
-                    : "CPF (somente números)"
+                  role === 'psychologist'
+                    ? 'CRP (ex: 06/123456)'
+                    : 'CPF (somente números)'
                 }
+                required
+                type="text"
+                value={identifier}
               />
             </div>
           )}
 
-          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+          {error && <p className="text-center text-red-600 text-sm">{error}</p>}
 
           <div>
-            <Button type="submit" className="w-full" isLoading={isLoading}>
+            <Button className="w-full" isLoading={isLoading} type="submit">
               {isLoading
-                ? "Processando..."
+                ? 'Processando...'
                 : isLoginView
-                ? "Entrar"
-                : "Registrar"}
+                  ? 'Entrar'
+                  : 'Registrar'}
             </Button>
           </div>
         </form>
-        <p className="mt-6 text-center text-sm text-slate-500">
-          {isLoginView ? "Não tem uma conta?" : "Já tem uma conta?"}
+        <p className="mt-6 text-center text-slate-500 text-sm">
+          {isLoginView ? 'Não tem uma conta?' : 'Já tem uma conta?'}
           <button
-            onClick={toggleView}
             className="ml-1 font-medium text-slate-600 hover:text-slate-800"
+            onClick={toggleView}
           >
-            {isLoginView ? "Registre-se" : "Faça login"}
+            {isLoginView ? 'Registre-se' : 'Faça login'}
           </button>
         </p>
       </div>

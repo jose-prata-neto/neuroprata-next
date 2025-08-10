@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card";
-import { User } from "@/server/db/schema";
+import { env } from '@/lib/env';
+import type { User } from '@/server/db/schema';
 
 export default async function AuthLayout({
   children,
@@ -7,24 +7,25 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }) {
   async function getUsers() {
-    const res = await fetch("http://localhost:3000/api/users");
+    const res = await fetch(`${env.NEXT_PUBLIC_BASE_URL}/api/users`);
     return res.json() as Promise<User[]>;
   }
 
   const users = await getUsers();
 
   return (
-    <main className="h-screen w-full flex items-center justify-center p-4">
+    <main className="flex h-screen w-full items-center justify-center p-4">
       {children}
-      <div className="absolute top-5 right-5">
-        <h2 className="text-lg font-semibold">Users</h2>
-        <ul className="space-y-2">
+      <div className="absolute top-5 right-5 rounded border p-2">
+        <h2 className="font-semibold text-lg">Users</h2>
+        <div className="space-y-2">
           {users.map((user) => (
-            <li key={user.id} className="border-b py-2">
-              {user.email}
-            </li>
+            <div className="border-b py-2 last:border-none" key={user.id}>
+              <p>Email: {user.email}</p>
+              <p>Name: {user.name}</p>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </main>
   );

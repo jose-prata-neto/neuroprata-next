@@ -1,14 +1,19 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  CardFooter,
   Card,
-} from "@/components/ui/card";
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -17,21 +22,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { type RegisterFormData, registerSchema } from "@/models/auth-form";
+} from '@/components/ui/select';
+import { type RegisterFormData, registerSchema } from '@/models/auth-form';
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,13 +41,13 @@ export default function RegisterPage() {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
       role: undefined,
-      crp: "",
-      cpf: "",
+      crp: '',
+      cpf: '',
     },
   });
 
@@ -56,10 +56,10 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: data.name,
@@ -74,13 +74,13 @@ export default function RegisterPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Falha no cadastro");
+        throw new Error(result.error || 'Falha no cadastro');
       }
 
-      router.push("/auth?success=registration");
+      router.push('/auth?success=registration');
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Ocorreu um erro inesperado"
+        err instanceof Error ? err.message : 'Ocorreu um erro inesperado'
       );
     } finally {
       setIsLoading(false);
@@ -98,13 +98,13 @@ export default function RegisterPage() {
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-600 text-sm">
             {error}
           </div>
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -132,8 +132,8 @@ export default function RegisterPage() {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
                         placeholder="Digite seu email"
+                        type="email"
                         {...field}
                         disabled={isLoading}
                       />
@@ -153,8 +153,8 @@ export default function RegisterPage() {
                     <FormLabel>Senha</FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
                         placeholder="Digite sua senha"
+                        type="password"
                         {...field}
                         disabled={isLoading}
                       />
@@ -175,8 +175,8 @@ export default function RegisterPage() {
                     <FormLabel>Confirmar Senha</FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
                         placeholder="Confirme sua senha"
+                        type="password"
                         {...field}
                         disabled={isLoading}
                       />
@@ -236,9 +236,9 @@ export default function RegisterPage() {
                 <FormItem className="flex flex-col">
                   <FormLabel>Role</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
                     defaultValue={field.value}
                     disabled={isLoading}
+                    onValueChange={field.onChange}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -259,16 +259,16 @@ export default function RegisterPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Criando Conta..." : "Criar Conta"}
+            <Button className="w-full" disabled={isLoading} type="submit">
+              {isLoading ? 'Criando Conta...' : 'Criar Conta'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex-col gap-1">
-        <p className="text-sm text-muted-foreground mx-auto">
-          Já tem uma conta?{" "}
-          <Link href="/auth/login" className="text-primary hover:underline">
+        <p className="mx-auto text-muted-foreground text-sm">
+          Já tem uma conta?{' '}
+          <Link className="text-primary hover:underline" href="/auth/login">
             Fazer login
           </Link>
         </p>

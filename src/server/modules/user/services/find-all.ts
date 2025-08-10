@@ -1,14 +1,12 @@
-import type { Service } from "@/interfaces/service";
-import type { IUserRepository } from "../repository";
-import { User } from "@/server/db/schema/user";
+import { Service } from '@/interfaces/service';
+import type { User } from '@/server/db/schema/user';
+import type { IUserRepository } from '../repository';
 
-export class FindAllUsersService
-  implements Service<IUserRepository, void, User[]>
-{
-  constructor(public repository: IUserRepository) {
-    this.repository = repository;
-  }
-
+export class FindAllUsersService extends Service<
+  IUserRepository,
+  void,
+  User[]
+> {
   async execute() {
     return await this.repository.findAll();
   }

@@ -1,6 +1,6 @@
-import { AuthRepository, IAuthRepository } from "./repository";
-import { RegisterService, LoginService } from "./services";
-import { db } from "@/server/db";
+import { db } from '@/server/db';
+import { AuthRepository, type IAuthRepository } from './repository';
+import { LoginService, RegisterService } from './services';
 
 function authFactory<T>(Service: new (repository: IAuthRepository) => T) {
   return new Service(new AuthRepository(db));

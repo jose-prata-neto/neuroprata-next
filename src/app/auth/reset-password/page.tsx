@@ -1,35 +1,32 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  CardFooter,
   Card,
-} from "@/components/ui/card";
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useState } from "react";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 const resetPasswordSchema = z.object({
-  email: z
-    .string()
-    .email("Por favor, insira um endereço de email válido")
-    .toLowerCase(),
+  email: z.email('Por favor, insira um endereço de email válido').toLowerCase(),
 });
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
@@ -42,11 +39,11 @@ export default function ResetPasswordPage() {
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
-  const onSubmit = async (data: ResetPasswordFormData) => {
+  const onSubmit = async (_data: ResetPasswordFormData) => {
     setIsLoading(true);
     setError(null);
 
@@ -56,7 +53,7 @@ export default function ResetPasswordPage() {
       setIsSuccess(true);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Ocorreu um erro inesperado"
+        err instanceof Error ? err.message : 'Ocorreu um erro inesperado'
       );
     } finally {
       setIsLoading(false);
@@ -73,8 +70,8 @@ export default function ResetPasswordPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="p-4 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
-            <p className="font-medium mb-2">Email de recuperação enviado!</p>
+          <div className="rounded-md border border-green-200 bg-green-50 p-4 text-green-600 text-sm">
+            <p className="mb-2 font-medium">Email de recuperação enviado!</p>
             <p>
               Enviamos um link de recuperação de senha para seu email. Clique no
               link para redefinir sua senha. O link expira em 1 hora.
@@ -82,21 +79,22 @@ export default function ResetPasswordPage() {
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-1">
-          <p className="text-sm text-muted-foreground mx-auto">
-            Não recebeu o email?{" "}
+          <p className="mx-auto text-muted-foreground text-sm">
+            Não recebeu o email?{' '}
             <button
+              className="text-primary hover:underline"
               onClick={() => {
                 setIsSuccess(false);
                 form.reset();
               }}
-              className="text-primary hover:underline"
+              type="button"
             >
               Tentar novamente
             </button>
           </p>
-          <p className="text-sm text-muted-foreground mx-auto">
-            Lembrou da senha?{" "}
-            <Link href="/auth" className="text-primary hover:underline">
+          <p className="mx-auto text-muted-foreground text-sm">
+            Lembrou da senha?{' '}
+            <Link className="text-primary hover:underline" href="/auth">
               Fazer login
             </Link>
           </p>
@@ -115,13 +113,13 @@ export default function ResetPasswordPage() {
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-600 text-sm">
             {error}
           </div>
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="email"
@@ -130,8 +128,8 @@ export default function ResetPasswordPage() {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
                       placeholder="Digite seu email cadastrado"
+                      type="email"
                       {...field}
                       disabled={isLoading}
                     />
@@ -144,22 +142,22 @@ export default function ResetPasswordPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Enviando..." : "Enviar Link de Recuperação"}
+            <Button className="w-full" disabled={isLoading} type="submit">
+              {isLoading ? 'Enviando...' : 'Enviar Link de Recuperação'}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex-col gap-1">
-        <p className="text-sm text-muted-foreground mx-auto">
-          Lembrou da senha?{" "}
-          <Link href="/auth/login" className="text-primary hover:underline">
+        <p className="mx-auto text-muted-foreground text-sm">
+          Lembrou da senha?{' '}
+          <Link className="text-primary hover:underline" href="/auth/login">
             Fazer login
           </Link>
         </p>
-        <p className="text-sm text-muted-foreground mx-auto">
-          Não tem uma conta?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
+        <p className="mx-auto text-muted-foreground text-sm">
+          Não tem uma conta?{' '}
+          <Link className="text-primary hover:underline" href="/auth/register">
             Cadastre-se
           </Link>
         </p>

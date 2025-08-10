@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import Modal from "./Modal";
-import Button from "./Button";
-import type { AuditLog } from "@/interfaces";
-import { formatShortDateTime } from "@/utils/formatters";
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import type { AuditLog } from '@/interfaces';
+import { formatShortDateTime } from '@/utils/formatters';
+import Button from './Button';
+import Modal from './Modal';
 
 interface ViewLogDetailsModalProps {
   isOpen: boolean;
@@ -50,7 +51,7 @@ const ViewLogDetailsModal: React.FC<ViewLogDetailsModalProps> = ({
   );
 
   const sessionInfo = sessionLogs[0]; // login_success event
-  const logoutInfo = sessionLogs.find((log) => log.action === "logout");
+  const logoutInfo = sessionLogs.find((log) => log.action === 'logout');
 
   return (
     <Modal
@@ -62,21 +63,21 @@ const ViewLogDetailsModal: React.FC<ViewLogDetailsModalProps> = ({
         {/* Session Summary */}
         <div className="grid grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
           <div>
-            <strong className="block text-slate-800">Usuário:</strong>{" "}
+            <strong className="block text-slate-800">Usuário:</strong>{' '}
             <span className="text-slate-600">{sessionInfo.userEmail}</span>
           </div>
           <div>
-            <strong className="block text-slate-800">Endereço IP:</strong>{" "}
+            <strong className="block text-slate-800">Endereço IP:</strong>{' '}
             <span className="text-slate-600">{sessionInfo.ipAddress}</span>
           </div>
           <div>
-            <strong className="block text-slate-800">Login:</strong>{" "}
+            <strong className="block text-slate-800">Login:</strong>{' '}
             <span className="text-slate-600">
-              {new Date(sessionInfo.timestamp).toLocaleString("pt-BR")}
+              {new Date(sessionInfo.timestamp).toLocaleString('pt-BR')}
             </span>
           </div>
           <div>
-            <strong className="block text-slate-800">Duração:</strong>{" "}
+            <strong className="block text-slate-800">Duração:</strong>{' '}
             <span className="text-slate-600">
               {getDuration(
                 sessionInfo.timestamp,
@@ -88,14 +89,14 @@ const ViewLogDetailsModal: React.FC<ViewLogDetailsModalProps> = ({
 
         {/* Timeline */}
         <div>
-          <label className="block text-sm font-semibold text-slate-800 mb-2">
+          <label className="mb-2 block font-semibold text-slate-800 text-sm">
             Linha do Tempo das Ações
           </label>
           <div className="h-80 overflow-y-auto rounded-md border border-slate-200 bg-white p-4">
-            <ol className="relative border-l border-slate-200">
+            <ol className="relative border-slate-200 border-l">
               {paginatedLogs.map((log) => (
-                <li key={log.id} className="mb-6 ml-6">
-                  <span className="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 ring-8 ring-white">
+                <li className="mb-6 ml-6" key={log.id}>
+                  <span className="-left-3 absolute flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 ring-8 ring-white">
                     <svg
                       className="h-3 w-3 text-slate-600"
                       fill="currentColor"
@@ -103,41 +104,41 @@ const ViewLogDetailsModal: React.FC<ViewLogDetailsModalProps> = ({
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        fillRule="evenodd"
-                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002 2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
                         clipRule="evenodd"
-                      ></path>
+                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002 2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                        fillRule="evenodd"
+                      />
                     </svg>
                   </span>
-                  <h3 className="flex items-center text-base font-semibold text-slate-900">
+                  <h3 className="flex items-center font-semibold text-base text-slate-900">
                     {log.action}
-                    {log.action === "login_success" && (
-                      <span className="mr-2 ml-3 rounded-full bg-green-100 px-2.5 py-0.5 text-sm font-medium text-green-800">
+                    {log.action === 'login_success' && (
+                      <span className="mr-2 ml-3 rounded-full bg-green-100 px-2.5 py-0.5 font-medium text-green-800 text-sm">
                         Início
                       </span>
                     )}
-                    {log.action === "logout" && (
-                      <span className="mr-2 ml-3 rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-800">
+                    {log.action === 'logout' && (
+                      <span className="mr-2 ml-3 rounded-full bg-red-100 px-2.5 py-0.5 font-medium text-red-800 text-sm">
                         Fim
                       </span>
                     )}
                   </h3>
-                  <time className="mb-2 block text-sm font-normal leading-none text-slate-500">
+                  <time className="mb-2 block font-normal text-slate-500 text-sm leading-none">
                     {formatShortDateTime(log.timestamp)}
                   </time>
                   <Button
-                    variant="ghost"
-                    size="sm"
                     onClick={() =>
                       setExpandedLogId(expandedLogId === log.id ? null : log.id)
                     }
+                    size="sm"
+                    variant="ghost"
                   >
                     {expandedLogId === log.id
-                      ? "Ocultar Detalhes"
-                      : "Ver Detalhes"}
+                      ? 'Ocultar Detalhes'
+                      : 'Ver Detalhes'}
                   </Button>
                   {expandedLogId === log.id && (
-                    <pre className="mt-2 text-xs text-slate-700 bg-slate-50 p-2 rounded-md border whitespace-pre-wrap">
+                    <pre className="mt-2 whitespace-pre-wrap rounded-md border bg-slate-50 p-2 text-slate-700 text-xs">
                       {JSON.stringify(log.details, null, 2)}
                     </pre>
                   )}
@@ -151,21 +152,21 @@ const ViewLogDetailsModal: React.FC<ViewLogDetailsModalProps> = ({
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-2">
             <Button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              variant="secondary"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               size="sm"
+              variant="secondary"
             >
               Anterior
             </Button>
-            <span className="text-sm text-slate-600">
+            <span className="text-slate-600 text-sm">
               Página {currentPage} de {totalPages}
             </span>
             <Button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              variant="secondary"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               size="sm"
+              variant="secondary"
             >
               Próximo
             </Button>
@@ -173,7 +174,7 @@ const ViewLogDetailsModal: React.FC<ViewLogDetailsModalProps> = ({
         )}
 
         <div className="flex justify-end pt-4">
-          <Button type="button" onClick={onClose} variant="secondary">
+          <Button onClick={onClose} type="button" variant="secondary">
             Fechar
           </Button>
         </div>

@@ -1,8 +1,7 @@
-import { userTable, type User, type UserUpdate } from "@/server/db/schema/user";
-import { db } from "@/server/db/index";
-
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { eq } from "drizzle-orm";
+import { eq } from 'drizzle-orm';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { db } from '@/server/db/index';
+import { type User, type UserUpdate, userTable } from '@/server/db/schema/user';
 
 export interface IUserRepository {
   findAll(): Promise<User[]>;
@@ -14,8 +13,8 @@ export interface IUserRepository {
 export class UserRepository implements IUserRepository {
   private readonly db: PostgresJsDatabase;
 
-  constructor(db: PostgresJsDatabase) {
-    this.db = db;
+  constructor(dbInput: PostgresJsDatabase) {
+    this.db = dbInput;
   }
 
   async findAll() {

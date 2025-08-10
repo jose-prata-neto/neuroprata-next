@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from "react";
-import type { AuditLog, User } from "@/interfaces";
-import Button from "./Button";
-import { EyeIcon } from "@/constants";
-import { formatShortDateTime } from "@/utils/formatters";
+import { Eye } from 'lucide-react';
+import type React from 'react';
+import { useMemo, useState } from 'react';
+import type { AuditLog, User } from '@/server/db/schema';
+import { formatShortDateTime } from '@/utils/formatters';
+import Button from './Button';
 
 interface AdminDashboardProps {
   logs: AuditLog[];
@@ -23,24 +24,24 @@ interface UserSession {
 const ITEMS_PER_PAGE = 10;
 
 const actionLabels: Record<string, string> = {
-  login_success: "Login Bem-sucedido",
-  logout: "Logout",
-  create_patient: "Criação de Paciente",
-  delete_patient: "Exclusão de Paciente",
-  transfer_patient: "Transferência de Paciente",
-  view_patient_record: "Visualização de Prontuário",
-  create_session: "Criação de Sessão",
-  delete_session: "Exclusão de Sessão",
-  view_session_notes: "Visualização de Anotações",
-  create_document: "Criação de Documento",
-  link_staff: "Vínculo de Funcionário",
-  unlink_staff: "Desvínculo de Funcionário",
+  login_success: 'Login Bem-sucedido',
+  logout: 'Logout',
+  create_patient: 'Criação de Paciente',
+  delete_patient: 'Exclusão de Paciente',
+  transfer_patient: 'Transferência de Paciente',
+  view_patient_record: 'Visualização de Prontuário',
+  create_session: 'Criação de Sessão',
+  delete_session: 'Exclusão de Sessão',
+  view_session_notes: 'Visualização de Anotações',
+  create_document: 'Criação de Documento',
+  link_staff: 'Vínculo de Funcionário',
+  unlink_staff: 'Desvínculo de Funcionário',
 };
 
 // Helper function moved outside the main component for stability and best practices.
 const renderLogoutTime = (dateString: string | null) => {
   if (!dateString)
-    return <span className="text-green-600 font-semibold">Ativa</span>;
+    return <span className="font-semibold text-green-600">Ativa</span>;
   return formatShortDateTime(dateString);
 };
 
@@ -50,10 +51,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onViewDetails,
 }) => {
   const [filters, setFilters] = useState({
-    user: "",
-    action: "",
-    startDate: "",
-    endDate: "",
+    user: '',
+    action: '',
+    startDate: '',
+    endDate: '',
   });
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -80,7 +81,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     for (const log of logsSorted) {
       if (!log.sessionId) continue;
 
-      if (log.action === "login_success") {
+      if (log.action === 'login_success') {
         if (!sessions[log.sessionId]) {
           sessions[log.sessionId] = {
             sessionId: log.sessionId,
@@ -94,7 +95,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         }
       } else if (sessions[log.sessionId]) {
         sessions[log.sessionId].actions.push(log);
-        if (log.action === "logout") {
+        if (log.action === 'logout') {
           sessions[log.sessionId].logoutTime = log.timestamp;
         }
       }
@@ -143,24 +144,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   return (
     <div className="h-full overflow-y-auto bg-slate-50 p-6">
-      <h2 className="text-3xl font-bold text-slate-800 mb-6">
+      <h2 className="mb-6 font-bold text-3xl text-slate-800">
         Painel de Auditoria - Sessões
       </h2>
 
-      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mb-6 grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="user"
-            className="block text-sm font-medium text-slate-700"
           >
             Usuário
           </label>
           <select
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="user"
             name="user"
-            value={filters.user}
             onChange={handleFilterChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            value={filters.user}
           >
             <option value="">Todos</option>
             {allUsers.map((user) => (
@@ -172,17 +173,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="action"
-            className="block text-sm font-medium text-slate-700"
           >
             Tipo de Ação
           </label>
           <select
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="action"
             name="action"
-            value={filters.action}
             onChange={handleFilterChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            value={filters.action}
           >
             <option value="">Todos os Tipos</option>
             {allActionTypes.map((action) => (
@@ -194,34 +195,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="startDate"
-            className="block text-sm font-medium text-slate-700"
           >
             Data Inicial
           </label>
           <input
-            type="date"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="startDate"
             name="startDate"
-            value={filters.startDate}
             onChange={handleFilterChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            type="date"
+            value={filters.startDate}
           />
         </div>
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="endDate"
-            className="block text-sm font-medium text-slate-700"
           >
             Data Final
           </label>
           <input
-            type="date"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="endDate"
             name="endDate"
-            value={filters.endDate}
             onChange={handleFilterChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            type="date"
+            value={filters.endDate}
           />
         </div>
       </div>
@@ -231,72 +232,72 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <thead className="bg-slate-50">
             <tr>
               <th
+                className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider"
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
               >
                 Usuário
               </th>
               <th
+                className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider"
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
               >
                 Login
               </th>
               <th
+                className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider"
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
               >
                 Logout
               </th>
               <th
+                className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider"
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
               >
                 IP
               </th>
               <th
+                className="px-6 py-3 text-left font-medium text-slate-500 text-xs uppercase tracking-wider"
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
               >
                 Ações
               </th>
-              <th scope="col" className="relative px-6 py-3">
+              <th className="relative px-6 py-3" scope="col">
                 <span className="sr-only">Detalhes</span>
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 bg-white">
             {paginatedSessions.map((session) => (
-              <tr key={session.sessionId} className="hover:bg-slate-50">
-                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-800">
+              <tr className="hover:bg-slate-50" key={session.sessionId}>
+                <td className="whitespace-nowrap px-6 py-4 font-medium text-slate-800 text-sm">
                   {session.userEmail}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                <td className="whitespace-nowrap px-6 py-4 text-slate-600 text-sm">
                   {formatShortDateTime(session.loginTime)}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                <td className="whitespace-nowrap px-6 py-4 text-slate-600 text-sm">
                   {renderLogoutTime(session.logoutTime)}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                <td className="whitespace-nowrap px-6 py-4 text-slate-600 text-sm">
                   {session.ipAddress}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-600 text-center">
+                <td className="whitespace-nowrap px-6 py-4 text-center text-slate-600 text-sm">
                   {session.actions.length}
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                <td className="whitespace-nowrap px-6 py-4 text-right font-medium text-sm">
                   <Button
-                    variant="ghost"
-                    size="sm"
                     onClick={() => onViewDetails(session.actions)}
+                    size="sm"
+                    variant="ghost"
                   >
-                    <EyeIcon className="h-4 w-4 mr-1" /> Ver Detalhes
+                    <Eye className="mr-1 h-4 w-4" /> Ver Detalhes
                   </Button>
                 </td>
               </tr>
             ))}
             {paginatedSessions.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-12 text-center text-slate-500">
+                <td className="py-12 text-center text-slate-500" colSpan={6}>
                   Nenhuma sessão encontrada para os filtros selecionados.
                 </td>
               </tr>
@@ -307,20 +308,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm text-slate-600">
+          <span className="text-slate-600 text-sm">
             Página {currentPage} de {totalPages}
           </span>
           <div className="space-x-2">
             <Button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               variant="secondary"
             >
               Anterior
             </Button>
             <Button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               variant="secondary"
             >
               Próximo

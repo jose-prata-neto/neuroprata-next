@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useEffect } from "react";
-import type { Patient, User } from "@/interfaces";
-import { PlusIcon, UserGroupIcon, ShieldCheckIcon } from "@/constants";
-import Button from "./Button";
+import { Plus, ShieldCheck, Users } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { Patient, User } from '@/server/db/schema';
+import Button from './Button';
 
 interface PatientListProps {
   patients: Patient[];
@@ -24,7 +25,7 @@ const PatientList: React.FC<PatientListProps> = ({
   onShowStaffManagement,
   onShowAdminDashboard,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredPatients = useMemo(
@@ -54,39 +55,39 @@ const PatientList: React.FC<PatientListProps> = ({
   return (
     <div className="flex h-full flex-col bg-white shadow-md">
       <div className="border-b p-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-bold text-slate-800">
-            {currentUser.role === "admin" ? "Todos os Pacientes" : "Pacientes"}
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-lg text-slate-800">
+            {currentUser.role === 'admin' ? 'Todos os Pacientes' : 'Pacientes'}
           </h2>
           <div>
-            {currentUser.role === "psychologist" && (
+            {currentUser.role === 'psychologist' && (
               <Button
-                variant="ghost"
-                size="sm"
                 onClick={onShowStaffManagement}
+                size="sm"
                 title="Gerenciar Equipe"
+                variant="ghost"
               >
-                <UserGroupIcon />
+                <Users />
               </Button>
             )}
-            {currentUser.role === "admin" && (
+            {currentUser.role === 'admin' && (
               <Button
-                variant="ghost"
-                size="sm"
                 onClick={onShowAdminDashboard}
+                size="sm"
                 title="Painel Admin"
+                variant="ghost"
               >
-                <ShieldCheckIcon />
+                <ShieldCheck />
               </Button>
             )}
           </div>
         </div>
         <input
-          type="text"
-          placeholder="Buscar por nome ou CPF..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
           className="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Buscar por nome ou CPF..."
+          type="text"
+          value={searchTerm}
         />
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -95,16 +96,16 @@ const PatientList: React.FC<PatientListProps> = ({
             {paginatedPatients.map((patient) => (
               <li key={patient.id}>
                 <button
-                  onClick={() => onSelectPatient(patient.id)}
                   className={`w-full border-b px-4 py-3 text-left transition-colors ${
                     selectedPatientId === patient.id
-                      ? "bg-slate-200"
-                      : "hover:bg-slate-50"
+                      ? 'bg-slate-200'
+                      : 'hover:bg-slate-50'
                   }`}
+                  onClick={() => onSelectPatient(patient.id)}
                 >
                   <p className="font-semibold text-slate-800">{patient.name}</p>
-                  <p className="text-sm text-slate-500">
-                    {patient.cpf || "Sem CPF"}
+                  <p className="text-slate-500 text-sm">
+                    {patient.cpf || 'Sem CPF'}
                   </p>
                 </button>
               </li>
@@ -114,8 +115,8 @@ const PatientList: React.FC<PatientListProps> = ({
           <div className="p-4 text-center text-slate-500">
             <p>
               {searchTerm
-                ? "Nenhum paciente encontrado."
-                : "Nenhum paciente cadastrado."}
+                ? 'Nenhum paciente encontrado.'
+                : 'Nenhum paciente cadastrado.'}
             </p>
           </div>
         )}
@@ -124,37 +125,37 @@ const PatientList: React.FC<PatientListProps> = ({
         {totalPages > 1 && (
           <div className="mb-4 flex items-center justify-between">
             <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setCurrentPage((p) => p - 1)}
               disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              size="sm"
+              variant="secondary"
             >
               Anterior
             </Button>
-            <span className="text-sm text-slate-500">
+            <span className="text-slate-500 text-sm">
               Página {currentPage} de {totalPages}
             </span>
             <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setCurrentPage((p) => p + 1)}
               disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              size="sm"
+              variant="secondary"
             >
               Próximo
             </Button>
           </div>
         )}
         <Button
-          onClick={onAddPatient}
-          disabled={currentUser.role === "staff"}
-          title={
-            currentUser.role === "staff"
-              ? "Apenas psicólogos podem adicionar pacientes."
-              : "Adicionar novo paciente"
-          }
           className="w-full"
+          disabled={currentUser.role === 'staff'}
+          onClick={onAddPatient}
+          title={
+            currentUser.role === 'staff'
+              ? 'Apenas psicólogos podem adicionar pacientes.'
+              : 'Adicionar novo paciente'
+          }
         >
-          <PlusIcon />
+          <Plus />
           <span className="ml-2">Novo Paciente</span>
         </Button>
       </div>

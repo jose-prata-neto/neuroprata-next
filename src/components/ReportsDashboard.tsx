@@ -1,19 +1,20 @@
-import React, { useMemo, useState } from "react";
-import type { Patient } from "../interfaces";
-import { ChartBarIcon, TagIcon } from "../constants";
+import { ChartBar, Tag } from 'lucide-react';
+import type React from 'react';
+import { useMemo, useState } from 'react';
 import {
-  BarChart,
   Bar,
-  LineChart,
+  BarChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { Payload } from "recharts/types/component/DefaultTooltipContent";
+} from 'recharts';
+import type { Payload } from 'recharts/types/component/DefaultTooltipContent';
+import type { Patient } from '@/server/db/schema';
 
 interface ReportsDashboardProps {
   patient: Patient;
@@ -41,12 +42,12 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   }
   return null;
 };
-CustomTooltip.displayName = "CustomTooltip";
+CustomTooltip.displayName = 'CustomTooltip';
 
 const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
   const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
+    startDate: '',
+    endDate: '',
   });
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +55,7 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
   };
 
   const filteredSessions = useMemo(() => {
-    if (!patient || !patient.sessions) return [];
+    if (!(patient && patient.sessions)) return [];
     return patient.sessions.filter((session) => {
       const sessionDate = new Date(session.date);
       const startDate = filters.startDate ? new Date(filters.startDate) : null;
@@ -97,7 +98,7 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
         const date = new Date(session.date);
         const monthKey = `${date.getFullYear()}-${String(
           date.getMonth() + 1
-        ).padStart(2, "0")}`;
+        ).padStart(2, '0')}`;
         acc[monthKey] = (acc[monthKey] || 0) + 1;
         return acc;
       },
@@ -107,17 +108,17 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
     const sortedMonths = Object.keys(sessionCountsByMonth).sort();
 
     return sortedMonths.map((monthKey) => {
-      const [year, month] = monthKey.split("-");
-      const date = new Date(parseInt(year), parseInt(month) - 1);
-      const monthName = date.toLocaleString("pt-BR", {
-        month: "short",
-        year: "2-digit",
+      const [year, month] = monthKey.split('-');
+      const date = new Date(Number.parseInt(year), Number.parseInt(month) - 1);
+      const monthName = date.toLocaleString('pt-BR', {
+        month: 'short',
+        year: '2-digit',
       });
 
       return {
         month:
           monthName.charAt(0).toUpperCase() +
-          monthName.slice(1).replace(".", ""),
+          monthName.slice(1).replace('.', ''),
         Sessões: sessionCountsByMonth[monthKey],
       };
     });
@@ -125,89 +126,89 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2">
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="report-startDate"
-            className="block text-sm font-medium text-slate-700"
           >
             Data Inicial
           </label>
           <input
-            type="date"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="report-startDate"
             name="startDate"
-            value={filters.startDate}
             onChange={handleFilterChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            type="date"
+            value={filters.startDate}
           />
         </div>
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="report-endDate"
-            className="block text-sm font-medium text-slate-700"
           >
             Data Final
           </label>
           <input
-            type="date"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="report-endDate"
             name="endDate"
-            value={filters.endDate}
             onChange={handleFilterChange}
-            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            type="date"
+            value={filters.endDate}
           />
         </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="text-xl font-bold text-slate-800 mb-6">
+        <h3 className="mb-6 font-bold text-slate-800 text-xl">
           Frequência de Sessões (Mensal)
         </h3>
         {sessionFrequencyData.length > 1 ? (
-          <div style={{ width: "100%", height: 300 }}>
+          <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer>
               <LineChart
                 data={sessionFrequencyData}
                 margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
               >
                 <CartesianGrid
+                  stroke="#e2e8f0"
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#e2e8f0"
                 />
                 <XAxis
-                  dataKey="month"
-                  stroke="#475569"
-                  fontSize={12}
-                  tickLine={false}
                   axisLine={false}
+                  dataKey="month"
+                  fontSize={12}
+                  stroke="#475569"
+                  tickLine={false}
                 />
                 <YAxis
                   allowDecimals={false}
-                  stroke="#475569"
-                  fontSize={12}
-                  tickLine={false}
                   axisLine={false}
+                  fontSize={12}
+                  stroke="#475569"
+                  tickLine={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
-                  wrapperStyle={{ fontSize: "14px", paddingTop: "20px" }}
+                  wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
                 />
                 <Line
-                  type="monotone"
+                  activeDot={{ r: 8 }}
                   dataKey="Sessões"
                   stroke="#475569"
                   strokeWidth={2}
-                  activeDot={{ r: 8 }}
+                  type="monotone"
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="rounded-lg border-2 border-dashed border-slate-200 p-8 text-center">
-            <ChartBarIcon className="mx-auto h-12 w-12 text-slate-400" />
-            <h4 className="mt-4 text-lg font-semibold text-slate-700">
+          <div className="rounded-lg border-2 border-slate-200 border-dashed p-8 text-center">
+            <ChartBar className="mx-auto h-12 w-12 text-slate-400" />
+            <h4 className="mt-4 font-semibold text-lg text-slate-700">
               Dados insuficientes
             </h4>
             <p className="mt-1 text-slate-500">
@@ -219,42 +220,42 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="text-xl font-bold text-slate-800 mb-6">
+        <h3 className="mb-6 font-bold text-slate-800 text-xl">
           Frequência de Tags Clínicas
         </h3>
         {tagFrequencyData.length > 0 ? (
-          <div style={{ width: "100%", height: 300 }}>
+          <div style={{ width: '100%', height: 300 }}>
             <ResponsiveContainer>
               <BarChart
+                barSize={40}
                 data={tagFrequencyData}
                 margin={{ top: 5, right: 20, left: -10, bottom: 5 }}
-                barSize={40}
               >
                 <CartesianGrid
+                  stroke="#e2e8f0"
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#e2e8f0"
                 />
                 <XAxis
-                  dataKey="name"
-                  stroke="#475569"
-                  fontSize={12}
-                  tickLine={false}
                   axisLine={false}
+                  dataKey="name"
+                  fontSize={12}
+                  stroke="#475569"
+                  tickLine={false}
                 />
                 <YAxis
                   allowDecimals={false}
-                  stroke="#475569"
-                  fontSize={12}
-                  tickLine={false}
                   axisLine={false}
+                  fontSize={12}
+                  stroke="#475569"
+                  tickLine={false}
                 />
                 <Tooltip
                   content={<CustomTooltip />}
-                  cursor={{ fill: "rgba(241, 245, 249, 0.5)" }}
+                  cursor={{ fill: 'rgba(241, 245, 249, 0.5)' }}
                 />
                 <Legend
-                  wrapperStyle={{ fontSize: "14px", paddingTop: "20px" }}
+                  wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
                 />
                 <Bar
                   dataKey="Frequência"
@@ -265,9 +266,9 @@ const ReportsDashboard: React.FC<ReportsDashboardProps> = ({ patient }) => {
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="rounded-lg border-2 border-dashed border-slate-200 p-8 text-center">
-            <TagIcon className="mx-auto h-12 w-12 text-slate-400" />
-            <h4 className="mt-4 text-lg font-semibold text-slate-700">
+          <div className="rounded-lg border-2 border-slate-200 border-dashed p-8 text-center">
+            <Tag className="mx-auto h-12 w-12 text-slate-400" />
+            <h4 className="mt-4 font-semibold text-lg text-slate-700">
               Nenhuma tag clínica encontrada
             </h4>
             <p className="mt-1 text-slate-500">

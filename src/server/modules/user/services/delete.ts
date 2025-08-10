@@ -1,15 +1,12 @@
-import type { Service } from "@/interfaces/service";
-import type { IUserRepository } from "../repository";
-import { User } from "@/server/db/schema/user";
+import { Service } from '@/interfaces/service';
+import type { IUserRepository } from '../repository';
 
-export class DeleteUserService
-  implements Service<IUserRepository, string, boolean>
-{
-  constructor(public repository: IUserRepository) {
-    this.repository = repository;
-  }
-
-  async execute(id: string) {
+export class DeleteUserService extends Service<
+  IUserRepository,
+  string,
+  boolean
+> {
+  async execute(id: string): Promise<boolean> {
     return await this.repository.delete(id);
   }
 }

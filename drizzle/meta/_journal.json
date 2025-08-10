@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1754671719264,
-      "tag": "0000_acoustic_serpent_society",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1754671963582,
-      "tag": "0001_purple_the_spike",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1754672067704,
-      "tag": "0002_outstanding_the_spike",
+      "when": 1754829936493,
+      "tag": "0000_charming_randall_flagg",
       "breakpoints": true
     }
   ]

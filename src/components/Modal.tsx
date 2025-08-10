@@ -1,5 +1,5 @@
-
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -54,31 +54,44 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   }
 
   return (
-    <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-all duration-300 ease-in-out ${isOpen ? 'bg-opacity-50 backdrop-blur-sm' : 'bg-opacity-0'}`}
+    <div
       aria-labelledby="modal-title"
-      role="dialog"
       aria-modal="true"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-all duration-300 ease-in-out ${isOpen ? 'bg-opacity-50 backdrop-blur-sm' : 'bg-opacity-0'}`}
       onClick={onClose}
+      role="dialog"
     >
-      <div 
+      <div
+        className={`relative w-full max-w-lg transform rounded-xl bg-white p-6 shadow-2xl transition-all duration-300 ease-in-out focus:outline-none ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+        onClick={(e) => e.stopPropagation()} // Make the div focusable
         ref={modalPanelRef}
-        tabIndex={-1} // Make the div focusable
-        className={`relative w-full max-w-lg transform rounded-xl bg-white p-6 shadow-2xl transition-all duration-300 ease-in-out focus:outline-none ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
-        onClick={e => e.stopPropagation()}
+        tabIndex={-1}
       >
         <div className="flex items-start justify-between">
-            <h2 id="modal-title" className="text-xl font-bold text-slate-800">{title}</h2>
-            <button
-                type="button"
-                className="text-slate-400 hover:text-slate-600"
-                onClick={onClose}
-                aria-label="Fechar"
+          <h2 className="font-bold text-slate-800 text-xl" id="modal-title">
+            {title}
+          </h2>
+          <button
+            aria-label="Fechar"
+            className="text-slate-400 hover:text-slate-600"
+            onClick={onClose}
+            type="button"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+              />
+            </svg>
+          </button>
         </div>
         <div className="mt-4">{children}</div>
       </div>

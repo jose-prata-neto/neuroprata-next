@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
-import Button from "./Button";
-import type { User } from "@/interfaces";
+import type React from 'react';
+import { useState } from 'react';
+import type { User } from '@/interfaces';
+import Button from './Button';
+import Modal from './Modal';
 
 interface TransferPatientModalProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ const TransferPatientModal: React.FC<TransferPatientModalProps> = ({
   psychologists,
   currentPsychologistId,
 }) => {
-  const [selectedId, setSelectedId] = useState("");
+  const [selectedId, setSelectedId] = useState('');
 
   const availablePsychologists = psychologists.filter(
     (p) => p.id !== currentPsychologistId
@@ -27,7 +28,7 @@ const TransferPatientModal: React.FC<TransferPatientModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedId) {
-      alert("Por favor, selecione um psicólogo.");
+      alert('Por favor, selecione um psicólogo.');
       return;
     }
     onTransfer(selectedId);
@@ -35,22 +36,22 @@ const TransferPatientModal: React.FC<TransferPatientModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Transferir Paciente">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
           <label
+            className="block font-medium text-slate-700 text-sm"
             htmlFor="psychologist-select"
-            className="block text-sm font-medium text-slate-700"
           >
             Selecione o novo psicólogo responsável
           </label>
           <select
-            id="psychologist-select"
-            value={selectedId}
-            onChange={(e) => setSelectedId(e.target.value)}
             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
+            id="psychologist-select"
+            onChange={(e) => setSelectedId(e.target.value)}
             required
+            value={selectedId}
           >
-            <option value="" disabled>
+            <option disabled value="">
               Selecione um profissional...
             </option>
             {availablePsychologists.map((p) => (
@@ -61,7 +62,7 @@ const TransferPatientModal: React.FC<TransferPatientModalProps> = ({
           </select>
         </div>
         <div className="flex justify-end space-x-3 pt-4">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button onClick={onClose} type="button" variant="secondary">
             Cancelar
           </Button>
           <Button type="submit">Confirmar Transferência</Button>
