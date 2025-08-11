@@ -1,27 +1,22 @@
-"use client";
+'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import type { Document } from '@/interfaces';
+import {
+  type DocumentFormValues,
+  documentFormSchema,
+} from '@/models/document-form';
+import { Button } from '../ui/button';
 import {
   Dialog,
-  DialogTrigger,
-  DialogHeader,
   DialogContent,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import type { Document } from "@/interfaces";
-import { useState } from "react";
-import { Input } from "../ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "../ui/select";
-import { FilePlus2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 import {
   Form,
   FormControl,
@@ -29,24 +24,32 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { DocumentFormValues, documentFormSchema } from "@/models/document-form";
+} from '../ui/form';
+import { Input } from '../ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 interface AddDocumentModalProps {
+  children: React.ReactNode;
   onSave: (
-    document: Omit<Document, "id" | "uploadedAt" | "url">,
+    document: Omit<Document, 'id' | 'uploadedAt' | 'url'>,
     file: File
   ) => void;
 }
 
-export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
+export function AddDocumentDialog({ onSave, children }: AddDocumentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<DocumentFormValues>({
     resolver: zodResolver(documentFormSchema),
     defaultValues: {
-      name: "",
-      type: "report",
+      name: '',
+      type: 'report',
       file: undefined,
     },
   });
@@ -65,10 +68,10 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
     const files = e.target.files;
     if (files && files.length > 0) {
       onChange(files);
-      const currentName = form.getValues("name");
+      const currentName = form.getValues('name');
       if (!currentName.trim()) {
-        const fileName = files[0].name.split(".").slice(0, -1).join(".");
-        form.setValue("name", fileName);
+        const fileName = files[0].name.split('.').slice(0, -1).join('.');
+        form.setValue('name', fileName);
       }
     }
   }
@@ -81,17 +84,8 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          className="absolute bototm-5 left-5"
-          variant="outline"
-          onClick={() => setIsOpen(true)}
-        >
-          <FilePlus2 />
-          Adicionar Documento
-        </Button>
-      </DialogTrigger>
+    <Dialog onOpenChange={handleOpenChange} open={isOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Adicionar Novo Documento</DialogTitle>
@@ -101,7 +95,7 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="name"
@@ -126,8 +120,8 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
                     <Input
                       type="file"
                       {...field}
-                      value=""
                       onChange={(e) => handleFileChange(e, onChange)}
+                      value=""
                     />
                   </FormControl>
                   <FormMessage />
@@ -142,11 +136,11 @@ export function AddDocumentDialog({ onSave }: AddDocumentModalProps) {
                 <FormItem>
                   <FormLabel>Tipo de Documento</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
                     defaultValue={field.value}
+                    onValueChange={field.onChange}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecione o tipo" />
                       </SelectTrigger>
                     </FormControl>

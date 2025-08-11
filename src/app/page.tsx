@@ -1,39 +1,37 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import type {
-  Patient,
-  Session,
-  Document,
-  User,
-  AuditLog,
-  RegisterData,
-} from "@/interfaces";
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import * as auditLogService from '@/actions/auditLogService';
+import * as authService from '@/actions/authService';
 import {
-  getPatients,
   addPatient,
   addSession,
   deleteSession,
+  getPatients,
   updateSessionPaymentStatus,
-} from "@/actions/storageService";
-import * as authService from "@/actions/authService";
-import * as auditLogService from "@/actions/auditLogService";
-import { fileToDataURL, getFileType } from "@/utils/formatters";
-
-import Header from "@/components/Header";
-import PatientList from "@/components/PatientList";
-import PatientDetail from "@/components/PatientDetail";
-import StaffManagement from "@/components/StaffManagement";
-import { AdminDashboard } from "@/components/AdminDashboard";
-
-import AddPatientModal from "@/components/AddPatientModal";
-import { SessionEditorModal } from "@/components/AddEvolutionModal";
-import AddDocumentModal from "@/components/AddDocumentModal";
-import ViewSessionNotesModal from "@/components/ViewSessionNotesModal";
-import ViewLogDetailsModal from "@/components/ViewLogDetailsModal";
-import AuthPage from "@/components/AuthPage";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import TransferPatientModal from "@/components/TransferPatientModal";
+} from '@/actions/storageService';
+import AddDocumentModal from '@/components/AddDocumentModal';
+import { SessionEditorModal } from '@/components/AddEvolutionModal';
+import AddPatientModal from '@/components/AddPatientModal';
+import { AdminDashboard } from '@/components/AdminDashboard';
+import AuthPage from '@/components/AuthPage';
+import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
+import Header from '@/components/Header';
+import PatientDetail from '@/components/PatientDetail';
+import PatientList from '@/components/PatientList';
+import StaffManagement from '@/components/StaffManagement';
+import TransferPatientModal from '@/components/TransferPatientModal';
+import ViewLogDetailsModal from '@/components/ViewLogDetailsModal';
+import ViewSessionNotesModal from '@/components/ViewSessionNotesModal';
+import type {
+  AuditLog,
+  Document,
+  Patient,
+  RegisterData,
+  Session,
+  User,
+} from '@/interfaces';
+import { fileToDataURL, getFileType } from '@/utils/formatters';
 
 export default function HomePage() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -41,8 +39,8 @@ export default function HomePage() {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [mainView, setMainView] = useState<"patients" | "staff" | "admin">(
-    "patients"
+  const [mainView, setMainView] = useState<'patients' | 'staff' | 'admin'>(
+    'patients'
   );
 
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(
@@ -60,7 +58,7 @@ export default function HomePage() {
   });
 
   const [itemToDelete, setItemToDelete] = useState<{
-    type: "patient" | "session";
+    type: 'patient' | 'session';
     id: string;
   } | null>(null);
   const [sessionToView, setSessionToView] = useState<Session | null>(null);
@@ -71,21 +69,21 @@ export default function HomePage() {
   }, [patients, selectedPatientId]);
 
   const deleteModalInfo = useMemo(() => {
-    if (itemToDelete?.type === "patient") {
+    if (itemToDelete?.type === 'patient') {
       const patient = patients.find((p) => p.id === itemToDelete.id);
       return {
-        title: "Excluir Paciente",
+        title: 'Excluir Paciente',
         message: `Você tem certeza que deseja excluir o paciente "${patient?.name}"? Esta ação é irreversível.`,
       };
     }
-    if (itemToDelete?.type === "session") {
+    if (itemToDelete?.type === 'session') {
       return {
-        title: "Excluir Sessão",
+        title: 'Excluir Sessão',
         message:
-          "Você tem certeza que deseja excluir esta sessão? Esta ação é irreversível.",
+          'Você tem certeza que deseja excluir esta sessão? Esta ação é irreversível.',
       };
     }
-    return { title: "", message: "" };
+    return { title: '', message: '' };
   }, [itemToDelete, patients]);
 
   const refreshData = useCallback(async () => {
@@ -95,11 +93,11 @@ export default function HomePage() {
       const usersData = await authService.getUsers();
       setUsers(usersData);
       const session = authService.getCurrentUser();
-      if (session?.user?.role === "admin") {
+      if (session?.user?.role === 'admin') {
         setAuditLogs(auditLogService.getAllLogs());
       }
     } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+      console.error('Erro ao carregar dados:', error);
       throw error;
     }
   }, []);
@@ -114,7 +112,7 @@ export default function HomePage() {
         }
         await refreshData();
       } catch (error) {
-        console.error("Erro ao inicializar aplicação:", error);
+        console.error('Erro ao inicializar aplicação:', error);
       } finally {
         setIsLoading(false);
       }
@@ -124,7 +122,7 @@ export default function HomePage() {
 
   const updateLogsState = useCallback(
     (newLog: AuditLog | null) => {
-      if (newLog && currentUser?.role === "admin") {
+      if (newLog && currentUser?.role === 'admin') {
         setAuditLogs((prevLogs) => [newLog, ...prevLogs]);
       }
     },
@@ -133,11 +131,11 @@ export default function HomePage() {
 
   const patientsForCurrentUser = useMemo(() => {
     if (!currentUser) return [];
-    if (currentUser.role === "admin") return patients;
-    if (currentUser.role === "psychologist") {
+    if (currentUser.role === 'admin') return patients;
+    if (currentUser.role === 'psychologist') {
       return patients.filter((p) => p.psychologistId === currentUser.id);
     }
-    if (currentUser.role === "staff") {
+    if (currentUser.role === 'staff') {
       const linkedPsychologistIds = currentUser.linkedUserIds || [];
       return patients.filter(
         (p) =>
@@ -148,23 +146,23 @@ export default function HomePage() {
   }, [patients, currentUser]);
 
   const canPerformAction = useCallback(
-    (action: "create" | "delete" | "transfer") => {
+    (action: 'create' | 'delete' | 'transfer') => {
       if (!currentUser) return false;
-      if (currentUser.role === "staff") return false;
+      if (currentUser.role === 'staff') return false;
       if (
-        (action === "create" || action === "delete" || action === "transfer") &&
-        currentUser.role === "admin"
+        (action === 'create' || action === 'delete' || action === 'transfer') &&
+        currentUser.role === 'admin'
       )
         return true;
-      return currentUser.role === "psychologist";
+      return currentUser.role === 'psychologist';
     },
     [currentUser]
   );
 
   useEffect(() => {
     if (
-      mainView === "patients" ||
-      (mainView === "admin" && currentUser?.role === "admin")
+      mainView === 'patients' ||
+      (mainView === 'admin' && currentUser?.role === 'admin')
     ) {
       if (
         patientsForCurrentUser.length > 0 &&
@@ -188,14 +186,14 @@ export default function HomePage() {
       setUsers(newUsers);
       await authService.saveUsers(newUsers);
     } catch (error) {
-      console.error("Erro ao salvar usuários:", error);
+      console.error('Erro ao salvar usuários:', error);
       throw error;
     }
   };
 
   const handleSelectPatient = useCallback((id: string) => {
     setSelectedPatientId(id);
-    setMainView("patients");
+    setMainView('patients');
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
@@ -207,8 +205,8 @@ export default function HomePage() {
       }
       return result;
     } catch (error) {
-      console.error("Erro no login:", error);
-      return { success: false, error: "Erro interno do servidor" };
+      console.error('Erro no login:', error);
+      return { success: false, error: 'Erro interno do servidor' };
     }
   };
 
@@ -220,8 +218,8 @@ export default function HomePage() {
       }
       return result;
     } catch (error) {
-      console.error("Erro no registro:", error);
-      return { success: false, error: "Erro interno do servidor" };
+      console.error('Erro no registro:', error);
+      return { success: false, error: 'Erro interno do servidor' };
     }
   };
 
@@ -229,45 +227,45 @@ export default function HomePage() {
     authService.logout();
     setCurrentUser(null);
     setSelectedPatientId(null);
-    setMainView("patients");
+    setMainView('patients');
     setAuditLogs([]);
   }, []);
 
   const handleAddPatient = async (
-    patientData: Omit<Patient, "id" | "createdAt" | "sessions" | "documents">
+    patientData: Omit<Patient, 'id' | 'createdAt' | 'sessions' | 'documents'>
   ) => {
-    if (!canPerformAction("create") || !currentUser) return;
+    if (!(canPerformAction('create') && currentUser)) return;
     try {
       const psychologistId =
-        currentUser.role === "psychologist" ? currentUser.id : undefined;
+        currentUser.role === 'psychologist' ? currentUser.id : undefined;
       await addPatient({ ...patientData, psychologistId });
       updateLogsState(
-        auditLogService.logEvent("create_patient", {
+        auditLogService.logEvent('create_patient', {
           patientName: patientData.name,
         })
       );
       setModals((prev) => ({ ...prev, addPatient: false }));
       await refreshData();
     } catch (error) {
-      console.error("Erro ao adicionar paciente:", error);
+      console.error('Erro ao adicionar paciente:', error);
     }
   };
 
   // DEBBUGING: Adicionados console.log para seguir o fluxo
   const handleAddSession = async (
-    sessionData: Omit<Session, "id">,
+    sessionData: Omit<Session, 'id'>,
     files: File[]
   ) => {
-    console.log("1. handleAddSession foi chamada no page.tsx");
+    console.log('1. handleAddSession foi chamada no page.tsx');
     if (!selectedPatientId) {
       console.error(
-        "SAÍDA: Nenhuma paciente selecionada (selectedPatientId está nulo)."
+        'SAÍDA: Nenhuma paciente selecionada (selectedPatientId está nulo).'
       );
       return;
     }
 
-    console.log("2. ID do Paciente Selecionado:", selectedPatientId);
-    console.log("3. Dados da sessão a serem guardados:", sessionData);
+    console.log('2. ID do Paciente Selecionado:', selectedPatientId);
+    console.log('3. Dados da sessão a serem guardados:', sessionData);
 
     try {
       await addSession({
@@ -275,21 +273,21 @@ export default function HomePage() {
         patientId: selectedPatientId,
       });
 
-      console.log("6. SUCESSO: A função addSession terminou sem erros.");
+      console.log('6. SUCESSO: A função addSession terminou sem erros.');
       updateLogsState(
-        auditLogService.logEvent("create_session", {
+        auditLogService.logEvent('create_session', {
           patientId: selectedPatientId,
         })
       );
       setModals((prev) => ({ ...prev, addSession: false }));
       await refreshData();
     } catch (error) {
-      console.error("!!! ERRO FINAL no page.tsx:", error);
+      console.error('!!! ERRO FINAL no page.tsx:', error);
     }
   };
 
   const handleAddDocument = async (
-    documentData: Omit<Document, "id" | "uploadedAt" | "url">,
+    documentData: Omit<Document, 'id' | 'uploadedAt' | 'url'>,
     file: File
   ) => {
     // Lógica futura
@@ -300,8 +298,8 @@ export default function HomePage() {
   }, []);
 
   const handleDeleteSession = (sessionId: string) => {
-    if (!canPerformAction("delete")) return;
-    setItemToDelete({ type: "session", id: sessionId });
+    if (!canPerformAction('delete')) return;
+    setItemToDelete({ type: 'session', id: sessionId });
     setModals((prev) => ({ ...prev, deleteConfirmation: true }));
   };
 
@@ -310,17 +308,17 @@ export default function HomePage() {
     if (!itemToDelete) return;
 
     // Lógica para apagar Pacientes (mantemos como estava)
-    if (itemToDelete.type === "patient") {
+    if (itemToDelete.type === 'patient') {
       // ... a lógica de apagar paciente que já tínhamos fica aqui ...
     }
     // Lógica NOVA para apagar Sessões
-    else if (itemToDelete.type === "session" && selectedPatientId) {
+    else if (itemToDelete.type === 'session' && selectedPatientId) {
       try {
         // Chama a nossa nova API para apagar a sessão
         await deleteSession(itemToDelete.id);
 
         updateLogsState(
-          auditLogService.logEvent("delete_session", {
+          auditLogService.logEvent('delete_session', {
             patientId: selectedPatientId,
             sessionId: itemToDelete.id,
           })
@@ -328,7 +326,7 @@ export default function HomePage() {
 
         await refreshData(); // Busca os dados atualizados
       } catch (error) {
-        console.error("Erro ao confirmar exclusão da sessão:", error);
+        console.error('Erro ao confirmar exclusão da sessão:', error);
       }
     }
 
@@ -342,7 +340,7 @@ export default function HomePage() {
   };
   const handleUpdateSessionStatus = async (
     sessionId: string,
-    status: "paid" | "pending"
+    status: 'paid' | 'pending'
   ) => {
     try {
       await updateSessionPaymentStatus(sessionId, status);
@@ -359,12 +357,12 @@ export default function HomePage() {
   const handleLinkStaff = async (
     staffEmail: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!currentUser || currentUser.role !== "psychologist")
-      return { success: false, error: "Ação não permitida." };
+    if (!currentUser || currentUser.role !== 'psychologist')
+      return { success: false, error: 'Ação não permitida.' };
     if (currentUser.linkedUserIds && currentUser.linkedUserIds.length > 0)
       return {
         success: false,
-        error: "Você já possui um funcionário vinculado.",
+        error: 'Você já possui um funcionário vinculado.',
       };
     try {
       const allUsers = await authService.getUsers();
@@ -374,10 +372,10 @@ export default function HomePage() {
       if (!staffToLink)
         return {
           success: false,
-          error: "Nenhum usuário encontrado com este e-mail.",
+          error: 'Nenhum usuário encontrado com este e-mail.',
         };
-      if (staffToLink.role !== "staff")
-        return { success: false, error: "Esta conta não é de um funcionário." };
+      if (staffToLink.role !== 'staff')
+        return { success: false, error: 'Esta conta não é de um funcionário.' };
       const updatedPsychologist = {
         ...currentUser,
         linkedUserIds: [staffToLink.id],
@@ -393,7 +391,7 @@ export default function HomePage() {
       });
       await updateAndSaveUsers(updatedUsers);
       updateLogsState(
-        auditLogService.logEvent("link_staff", {
+        auditLogService.logEvent('link_staff', {
           staffId: staffToLink.id,
           staffEmail: staffToLink.email,
         })
@@ -403,13 +401,13 @@ export default function HomePage() {
       await refreshData();
       return { success: true };
     } catch (error) {
-      console.error("Erro ao vincular funcionário:", error);
-      return { success: false, error: "Erro interno do servidor" };
+      console.error('Erro ao vincular funcionário:', error);
+      return { success: false, error: 'Erro interno do servidor' };
     }
   };
 
   const handleUnlinkStaff = async (staffId: string) => {
-    if (!currentUser || currentUser.role !== "psychologist") return;
+    if (!currentUser || currentUser.role !== 'psychologist') return;
     try {
       const allUsers = await authService.getUsers();
       const staffToUnlink = allUsers.find((u) => u.id === staffId);
@@ -428,7 +426,7 @@ export default function HomePage() {
       });
       await updateAndSaveUsers(updatedUsers);
       updateLogsState(
-        auditLogService.logEvent("unlink_staff", {
+        auditLogService.logEvent('unlink_staff', {
           staffId: staffToUnlink.id,
           staffEmail: staffToUnlink.email,
         })
@@ -437,14 +435,14 @@ export default function HomePage() {
       authService.saveCurrentUser(updatedPsychologist);
       await refreshData();
     } catch (error) {
-      console.error("Erro ao desvincular funcionário:", error);
+      console.error('Erro ao desvincular funcionário:', error);
     }
   };
 
   const handleOpenViewNotesModal = (session: Session) => {
     if (selectedPatientId) {
       updateLogsState(
-        auditLogService.logEvent("view_session_notes", {
+        auditLogService.logEvent('view_session_notes', {
           patientId: selectedPatientId,
           sessionId: session.id,
         })
@@ -472,20 +470,20 @@ export default function HomePage() {
   }
 
   const renderMainView = () => {
-    if (mainView === "admin" && currentUser.role === "admin") {
+    if (mainView === 'admin' && currentUser.role === 'admin') {
       return (
         <AdminDashboard
           logs={auditLogs}
-          users={users}
           onViewDetails={handleOpenViewSessionLogs}
+          users={users}
         />
       );
     }
-    if (mainView === "staff") {
+    if (mainView === 'staff') {
       return (
         <StaffManagement
-          currentUser={currentUser}
           allUsers={users}
+          currentUser={currentUser}
           onLinkStaff={handleLinkStaff}
           onUnlinkStaff={handleUnlinkStaff}
         />
@@ -494,41 +492,41 @@ export default function HomePage() {
     return (
       <PatientDetail
         currentUser={currentUser}
-        patient={selectedPatient}
-        onAddSession={() =>
-          setModals((prev) => ({ ...prev, addSession: true }))
-        }
         onAddDocument={() =>
           setModals((prev) => ({ ...prev, addDocument: true }))
         }
-        onViewSessionNotes={handleOpenViewNotesModal}
+        onAddSession={() =>
+          setModals((prev) => ({ ...prev, addSession: true }))
+        }
         onDeletePatient={handleDeletePatient}
         onDeleteSession={handleDeleteSession}
         onTransferPatient={() =>
           setModals((prev) => ({ ...prev, transferPatient: true }))
         }
         onUpdateSessionStatus={handleUpdateSessionStatus}
+        onViewSessionNotes={handleOpenViewNotesModal}
+        patient={selectedPatient}
       />
     );
   };
 
-  const allPsychologists = users.filter((u) => u.role === "psychologist");
+  const allPsychologists = users.filter((u) => u.role === 'psychologist');
 
   return (
     <div className="flex h-screen w-full flex-col font-sans">
-      <Header user={currentUser} onLogout={handleLogout} />
+      <Header onLogout={handleLogout} user={currentUser} />
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-1/3 max-w-sm flex-shrink-0 border-r border-slate-200">
+        <aside className="w-1/3 max-w-sm flex-shrink-0 border-slate-200 border-r">
           <PatientList
-            patients={patientsForCurrentUser}
             currentUser={currentUser}
-            selectedPatientId={selectedPatientId}
-            onSelectPatient={handleSelectPatient}
             onAddPatient={() =>
               setModals((prev) => ({ ...prev, addPatient: true }))
             }
-            onShowStaffManagement={() => setMainView("staff")}
-            onShowAdminDashboard={() => setMainView("admin")}
+            onSelectPatient={handleSelectPatient}
+            onShowAdminDashboard={() => setMainView('admin')}
+            onShowStaffManagement={() => setMainView('staff')}
+            patients={patientsForCurrentUser}
+            selectedPatientId={selectedPatientId}
           />
         </aside>
         <main className="flex-1 overflow-auto">{renderMainView()}</main>
@@ -563,21 +561,21 @@ export default function HomePage() {
       />
       <DeleteConfirmationModal
         isOpen={modals.deleteConfirmation}
+        message={deleteModalInfo.message}
         onClose={() =>
           setModals((prev) => ({ ...prev, deleteConfirmation: false }))
         }
         onConfirm={handleConfirmDelete}
         title={deleteModalInfo.title}
-        message={deleteModalInfo.message}
       />
       <TransferPatientModal
+        currentPsychologistId={selectedPatient?.psychologistId}
         isOpen={modals.transferPatient}
         onClose={() =>
           setModals((prev) => ({ ...prev, transferPatient: false }))
         }
         onTransfer={handleTransferPatient}
         psychologists={allPsychologists}
-        currentPsychologistId={selectedPatient?.psychologistId}
       />
     </div>
   );

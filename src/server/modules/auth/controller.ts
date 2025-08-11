@@ -6,17 +6,34 @@ import { AppErrorFactory } from '@/utils/error/error-factory';
 import { authServices } from './factory';
 
 export class AuthController {
+  private handleError(error: unknown): NextResponse {
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.message,
+          code: error.code,
+        },
+        { status: error.httpStatus }
+      );
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      // TODO: Add proper logging service
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+      },
+      { status: 500 }
+    );
+  }
+
   async register(request: NextRequest): Promise<NextResponse> {
     try {
       const body = (await request.json()) as UserCreate;
-
-      if (!body.email) {
-        throw AppErrorFactory.requiredField('email');
-      }
-
-      if (!body.password) {
-        throw AppErrorFactory.requiredField('password');
-      }
 
       const userId = await authServices.register.execute(body);
 
@@ -169,9 +186,6 @@ export class AuthController {
     }
   }
 
-  /**
-   * Get current user info
-   */
   me(request: NextRequest): NextResponse {
     try {
       const token = request.cookies.get('access-token')?.value;
@@ -196,35 +210,6 @@ export class AuthController {
     } catch (error) {
       return this.handleError(error);
     }
-  }
-
-  /**
-   * Handle errors consistently
-   */
-  private handleError(error: unknown): NextResponse {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: error.message,
-          code: error.code,
-        },
-        { status: error.httpStatus }
-      );
-    }
-
-    // Log unexpected errors in production
-    if (process.env.NODE_ENV === 'production') {
-      // TODO: Add proper logging service
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Internal server error',
-      },
-      { status: 500 }
-    );
   }
 }
 

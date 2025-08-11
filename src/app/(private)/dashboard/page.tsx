@@ -1,3 +1,10 @@
+import { DashboardHeader } from '@/components/new-components/dashboard-header';
+
 export default function DashboardPage() {
-  return <div>Dashboard</div>;
+  return (
+    <div>
+      <DashboardHeader />
+      <h1>Dashboard</h1>
+    </div>
+  );
 }

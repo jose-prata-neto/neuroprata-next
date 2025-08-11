@@ -1,15 +1,15 @@
-import type React from 'react';
-import { useEffect, useState } from 'react';
-import type { Document } from '@/interfaces';
-import Button from './Button';
-import Modal from './Modal';
+import type React from "react";
+import { useEffect, useState } from "react";
+import type { Document } from "@/interfaces";
+import Button from "./Button";
+import Modal from "./Modal";
 
 interface AddDocumentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (
-    document: Omit<Document, 'id' | 'uploadedAt' | 'url'>,
-    file: File
+    document: Omit<Document, "id" | "uploadedAt" | "url">,
+    file: File,
   ) => void;
 }
 
@@ -21,16 +21,16 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [name, setName] = useState('');
-  const [type, setType] = useState<'pdf' | 'image' | 'report'>('report');
+  const [name, setName] = useState("");
+  const [type, setType] = useState<"pdf" | "image" | "report">("report");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       const timer = setTimeout(() => {
-        setName('');
-        setType('report');
+        setName("");
+        setType("report");
         setFile(null);
         setError(null);
       }, 300);
@@ -40,7 +40,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
 
   const validate = () => {
     if (!(name.trim() && file)) {
-      setError('Nome do documento e arquivo são obrigatórios.');
+      setError("Nome do documento e arquivo são obrigatórios.");
       return false;
     }
     setError(null);
@@ -62,13 +62,13 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
       if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
         setError(`O arquivo excede o limite de ${MAX_FILE_SIZE_MB}MB.`);
         setFile(null);
-        e.target.value = '';
+        e.target.value = "";
         return;
       }
 
       setFile(selectedFile);
       if (!name) {
-        setName(selectedFile.name.split('.').slice(0, -1).join('.'));
+        setName(selectedFile.name.split(".").slice(0, -1).join("."));
       }
     }
   };
@@ -86,8 +86,8 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
           <input
             className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm ${
               error && !name.trim()
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500'
+                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                : "border-slate-300 focus:border-slate-500 focus:ring-slate-500"
             }`}
             id="doc-name"
             onChange={(e) => setName(e.target.value)}
@@ -107,7 +107,7 @@ const AddDocumentModal: React.FC<AddDocumentModalProps> = ({
             className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             id="doc-type"
             onChange={(e) =>
-              setType(e.target.value as 'pdf' | 'image' | 'report')
+              setType(e.target.value as "pdf" | "image" | "report")
             }
             value={type}
           >

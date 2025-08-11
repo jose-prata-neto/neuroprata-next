@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // <-- Importa o nosso novo cliente centralizado
-import type { Patient } from "@/interfaces";
+import type { Patient } from "@/server/db/schema";
 
 export async function GET() {
   try {
@@ -10,7 +9,6 @@ export async function GET() {
     });
     return NextResponse.json(patients);
   } catch (error) {
-    console.error("Erro ao buscar pacientes:", error);
     return new NextResponse("Erro interno do servidor", { status: 500 });
   }
 }
